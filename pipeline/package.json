@@ -1,0 +1,8 @@
+{
+  "name": "visor-gerencial-pipeline",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@gltf-transform/cli": "4.1.1"
+  }
+}

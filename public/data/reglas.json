@@ -1,0 +1,17 @@
+{
+  "_nota": "Reglas de clasificación. Se evalúan en orden sobre 'Clase IFC | Tipo | Nombre'. La primera que coincide gana.",
+  "excluir": "IfcReinforcingBar|IfcOpeningElement|IfcSpace|IfcAnnotation|IfcGrid|IfcVirtualElement|ENCOFRADO|Encofrado|Pintura|Curado|Barra de armadura",
+  "tipos": [
+    { "tipo": "Buzón",          "patron": "BUZON|Losa (Superior|Inferior) (Circular|Rectangular)|Muro (Circular|Rectangular)|\\|ESPECIAL", "agrupar": "contacto", "tolerancia": 0.5 },
+    { "tipo": "Sumidero",       "patron": "Sumidero|Rejilla|RegistroRejilla",          "agrupar": "contacto", "tolerancia": 0.5 },
+    { "tipo": "Tubería",        "patron": "IfcFlowSegment|IfcFlowFitting|Tuberia|Tubería|Codo|REC_TUB", "agrupar": "sistema", "tolerancia": 0.05 },
+    { "tipo": "Gaviones",       "patron": "Gavion|Gavión",                              "agrupar": "tramo", "tramo": 100 },
+    { "tipo": "Canal",          "patron": "MuroCanal|SueloConcreto|MuroConcreto|JUNTA", "agrupar": "tramo", "tramo": 100 }
+  ],
+  "por_modelo": {
+    "_nota": "Tipo por defecto para elementos sin regla, según la descripción del modelo (texto entre paréntesis del nombre del IFC).",
+    "Sumideros": "Sumidero",
+    "Buzones": "Buzón",
+    "Dique": "Canal"
+  }
+}

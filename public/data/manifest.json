@@ -1,0 +1,73 @@
+{
+  "proyecto": "Drenaje Pluvial Integral de la Ciudad de Talara",
+  "epsg": 32717,
+  "origen": {
+    "e": 470000,
+    "n": 9494000,
+    "z": 0,
+    "lon": -81.27045847519386,
+    "lat": -4.577791908903478
+  },
+  "ejes": "glTF x=Este, y=Elevación, z=-Norte (metros, relativo al origen)",
+  "modelos": [
+    {
+      "codigo": "500125-CSSP001-560-XX-MD-ST-000092",
+      "modelo": "Dique Mangle",
+      "paquete": "Paquete 9",
+      "sector": "Sector 1",
+      "componente": "Componente 11.3",
+      "componente_desc": "DIQUE 06 - MANGLE",
+      "glb": "models/500125-CSSP001-560-XX-MD-ST-000092.glb",
+      "estructuras": 9,
+      "tipos": {
+        "Canal": 7,
+        "Gaviones": 2
+      },
+      "bbox_utm": [
+        470177.5625,
+        9494533.0,
+        470502.8125,
+        9494843.0
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000091",
+      "modelo": "Sumideros",
+      "paquete": "Paquete 9",
+      "sector": "Sector 1",
+      "componente": "Componente 27",
+      "componente_desc": "DRENAJE URBANO - LUCY VILLANUEVA",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000091.glb",
+      "estructuras": 35,
+      "tipos": {
+        "Sumidero": 35
+      },
+      "bbox_utm": [
+        469632.65625,
+        9494640.0,
+        469977.53125,
+        9495108.0
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000092",
+      "modelo": "Buzones y Tuberias",
+      "paquete": "Paquete 9",
+      "sector": "Sector 1",
+      "componente": "Componente 27",
+      "componente_desc": "DRENAJE URBANO - LUCY VILLANUEVA",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000092.glb",
+      "estructuras": 129,
+      "tipos": {
+        "Buzón": 30,
+        "Tubería": 99
+      },
+      "bbox_utm": [
+        469623.53125,
+        9494647.0,
+        469972.4375,
+        9495105.0
+      ]
+    }
+  ]
+}
