@@ -1,6 +1,11 @@
 {
   "nombre": "Drenaje Pluvial Integral de la Ciudad de Talara",
   "epsg": 32717,
-  "origen": { "e": 470000, "n": 9494000, "z": 0 },
-  "_nota": "El origen es fijo para todo el proyecto: todos los GLB se restan contra él, así agregar modelos no mueve los anteriores."
+  "origen": {
+    "e": 470000,
+    "n": 9494000,
+    "z": 0
+  },
+  "_nota": "El origen es fijo para todo el proyecto: todos los GLB se restan contra él, así agregar modelos no mueve los anteriores.",
+  "repositorio": "jtananta/Visor_BIM-GIS"
 }
