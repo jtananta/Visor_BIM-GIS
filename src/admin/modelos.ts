@@ -111,7 +111,7 @@ export async function publicarModelos(con: Conexion, listos: Listo[], componente
     leerTexto(con, `${RAIZ_DATOS}trazado.geojson`),
     leerTexto(con, `${RAIZ_DATOS}catalogo.csv`),
   ]);
-  if (!m) throw new Error(`No encontré ${RAIZ_DATOS}manifest.json en ${con.repo}.`);
+  if (!m) throw new Error(`No encontré ${RAIZ_DATOS}manifest.json en el repositorio.`);
   const manifest: Manifest = JSON.parse(m);
   const cambios: Cambios = {};
   const d = agregarModelos({

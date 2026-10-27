@@ -61,13 +61,12 @@ export default function Admin() {
     ]).then(([rg, pr]) => {
       setReglas(rg);
       setProyecto(pr);
-      setCon((c) => (c.repo ? c : { ...c, repo: pr.repositorio ?? '' }));
     }).catch(() => setAviso({ tipo: 'error', texto: 'No se pudieron leer reglas.json y proyecto.json del sitio.' }));
   }, []);
 
   const conectar = async () => {
     setAviso(null);
-    setOcupado('Conectando con GitHub…');
+    setOcupado('Conectando…');
     try {
       await probarConexion(con);
       guardarConexion(con, recordar);
@@ -284,19 +283,17 @@ export default function Admin() {
         {ocupado && <div className="aviso-admin info" role="status">{ocupado}</div>}
 
         <section className="tarjeta">
-          <h2>1. Conexión con el repositorio</h2>
-          <p className="sutil">Lo que publiques aquí se guarda en el repositorio de GitHub del visor y el link público se actualiza solo.
-            Necesitas un token de GitHub con permiso <strong>Contents: Read and write</strong> sobre ese repositorio.</p>
+          <h2>1. Clave de publicación</h2>
+          <p className="sutil">Lo que publiques aquí se guarda en el repositorio del visor y el link público se actualiza solo en uno o dos minutos.</p>
           <div className="campos">
-            <label htmlFor="repo">Repositorio<input id="repo" value={con.repo} placeholder="usuario/visor-gerencial-drenaje" onChange={(e) => setCon({ ...con, repo: e.target.value.trim() })} /></label>
-            <label htmlFor="rama">Rama<input id="rama" value={con.rama} onChange={(e) => setCon({ ...con, rama: e.target.value.trim() })} /></label>
-            <label htmlFor="token" className="ancho">Token de GitHub<input id="token" type="password" value={con.token} placeholder="github_pat_…" onChange={(e) => setCon({ ...con, token: e.target.value.trim() })} /></label>
+            <label htmlFor="clave" className="ancho">Clave de publicación<input id="clave" type="password" value={con.clave} autoComplete="off"
+              onChange={(e) => setCon({ clave: e.target.value })} onKeyDown={(e) => { if (e.key === 'Enter' && con.clave) void conectar(); }} /></label>
           </div>
           <div className="fila-acciones">
             <label className="check" htmlFor="recordar"><input id="recordar" type="checkbox" checked={recordar} onChange={(e) => setRecordar(e.target.checked)} /> Recordar en este navegador</label>
-            <button className="btn btn-primario angosto" onClick={conectar} disabled={!con.repo || !con.token || !reglas || !!ocupado}>{conectado ? 'Reconectar' : 'Conectar'}</button>
+            <button className="btn btn-primario angosto" onClick={conectar} disabled={!con.clave || !reglas || !!ocupado}>{conectado ? 'Volver a cargar' : 'Entrar'}</button>
           </div>
-          {conectado && <p className="ok-linea">Conectado a {con.repo} ({con.rama}).</p>}
+          {conectado && <p className="ok-linea">Listo: puedes publicar.</p>}
         </section>
 
         {conectado && repo && (

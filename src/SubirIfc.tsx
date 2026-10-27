@@ -31,6 +31,7 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
   const [ctx, setCtx] = useState<Contexto | null>(null);
   const [con, setCon] = useState<Conexion>(leerConexion);
   const [recordar, setRecordar] = useState(true);
+  const [pedirClave, setPedirClave] = useState(() => !leerConexion().clave);
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [aviso, setAviso] = useState<{ tipo: 'ok' | 'error'; texto: string } | null>(null);
   const entrada = useRef<HTMLInputElement | null>(null);
@@ -38,10 +39,7 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
   const urls = useRef<string[]>([]);
 
   useEffect(() => {
-    leerContexto(datos.componentes).then((c) => {
-      setCtx(c);
-      setCon((x) => (x.repo ? x : { ...x, repo: (c.proyecto as { repositorio?: string }).repositorio ?? '' }));
-    }).catch(() => setAviso({ tipo: 'error', texto: 'No se pudieron leer las reglas de conversión del sitio.' }));
+    leerContexto(datos.componentes).then(setCtx).catch(() => setAviso({ tipo: 'error', texto: 'No se pudieron leer las reglas de conversión del sitio.' }));
   }, [datos.componentes]);
 
   useEffect(() => {
@@ -97,7 +95,7 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
 
   const publicarTodo = async () => {
     setAviso(null);
-    setOcupado('Conectando con GitHub…');
+    setOcupado('Conectando…');
     try {
       await probarConexion(con);
       guardarConexion(con, recordar);
@@ -106,13 +104,13 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
       setItems((l) => l.map((x) => (hechos.has(x.archivo) ? { ...x, estado: 'publicado' } : x)));
       setAviso({ tipo: 'ok', texto: 'Publicado. Todos lo verán en el link en uno o dos minutos.' });
     } catch (e) {
-      setAviso({ tipo: 'error', texto: e instanceof Error ? e.message : String(e) });
+      const texto = e instanceof Error ? e.message : String(e);
+      if (/clave/i.test(texto)) setPedirClave(true);
+      setAviso({ tipo: 'error', texto });
     } finally {
       setOcupado(null);
     }
   };
-
-  const tieneToken = Boolean(leerConexion().token);
 
   return (
     <div className="modal-fondo" onClick={(e) => { if (e.target === e.currentTarget && !ocupado) cerrar(); }}>
@@ -162,18 +160,15 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
 
         {porPublicar.length > 0 && (
           <div className="publicar-ifc">
-            {!tieneToken && (
+            {pedirClave && (
               <>
-                <p className="sutil">Para publicar necesitas un token de GitHub con permiso <strong>Contents: Read and write</strong> en el repositorio
-                  del visor (los pasos están en el README). Se guarda solo en este navegador.</p>
-                <label className="campo"><span>Repositorio</span>
-                  <input value={con.repo} onChange={(e) => setCon({ ...con, repo: e.target.value.trim() })} placeholder="usuario/repositorio" /></label>
-                <label className="campo"><span>Token de GitHub</span>
-                  <input type="password" value={con.token} onChange={(e) => setCon({ ...con, token: e.target.value.trim() })} placeholder="github_pat_…" autoComplete="off" /></label>
+                <label className="campo"><span>Clave de publicación</span>
+                  <input type="password" value={con.clave} onChange={(e) => setCon({ clave: e.target.value })} autoComplete="off"
+                    onKeyDown={(e) => { if (e.key === 'Enter' && con.clave) void publicarTodo(); }} /></label>
                 <label className="check"><input type="checkbox" checked={recordar} onChange={(e) => setRecordar(e.target.checked)} /> Recordar en este navegador</label>
               </>
             )}
-            <button className="btn btn-primario" onClick={publicarTodo} disabled={Boolean(ocupado) || !con.repo || !con.token}>
+            <button className="btn btn-primario" onClick={publicarTodo} disabled={Boolean(ocupado) || !con.clave}>
               Publicar para todos ({porPublicar.length})
             </button>
           </div>

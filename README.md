@@ -11,23 +11,33 @@ Al hacer clic en una estructura muestra solo información general: nombre, compo
 Todo lo que ve el visor está en `public/data/`. Cada cambio que se guarda en el repositorio hace que Vercel vuelva a publicar el sitio solo, en uno o dos minutos.
 Hay dos formas de cambiar esos datos: desde la página de administración (lo normal) o con los scripts de `pipeline/` (para cargas masivas).
 
+## Configurar la publicación (una sola vez)
+
+La publicación pasa por una función del propio sitio (`api/publicar.js`). El token de GitHub queda guardado en Vercel y nadie tiene que pegarlo en el navegador.
+Para publicar basta con la **clave de publicación**, y quien no la tenga solo puede mirar.
+
+1. **Token de GitHub.** Entra a **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
+   En *Repository access* elige *Only select repositories* y marca este repositorio. En *Permissions → Contents* elige **Read and write**. Genéralo y cópialo.
+2. **Variables en Vercel.** Ve a **Project → Settings → Environment Variables** y agrega estas dos:
+   - `GITHUB_TOKEN`: el token del paso 1.
+   - `CLAVE_PUBLICAR`: la clave que usarán quienes publiquen. Elige una difícil de adivinar.
+3. **Redeploy.** En **Deployments**, abre el último y pulsa **Redeploy** para que tome las variables.
+
+Opcionales: `GITHUB_REPO` (por defecto, el repositorio conectado a Vercel) y `GITHUB_RAMA` (por defecto, `main`).
+Para cambiar la clave, edita `CLAVE_PUBLICAR` y vuelve a desplegar.
+
 ## Subir IFC desde el visor
 
 El botón **Subir IFC** de la barra superior convierte el IFC en el navegador y muestra el modelo al instante, solo para quien lo subió.
-Con **Publicar para todos** queda en el link público. La primera vez pide el token de GitHub (ver abajo).
+Con **Publicar para todos** queda en el link público. La primera vez pide la clave de publicación y la recuerda.
+Desde el visor se publican archivos de hasta 3 MB por modelo liviano. Un IFC de 100 MB suele dar menos de 1 MB.
 Para quitar modelos, cargar el catálogo o las capas GIS, usa la página de administración.
 
 ## Página de administración (`#admin`)
 
-### 1. Crear el token de GitHub (una sola vez por computadora)
+### 1. Entrar
 
-1. En GitHub ve a **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
-2. En **Repository access** elige *Only select repositories* y marca solo este repositorio.
-3. En **Permissions → Repository permissions → Contents**, elige **Read and write**.
-4. Ponle una fecha de vencimiento, genéralo y cópialo.
-5. En `#admin` pega el repositorio (`usuario/repositorio`), la rama (`main`) y el token, y pulsa **Conectar**. Si marcas *Recordar en este navegador*, el token queda guardado solo en ese navegador. No se sube a ningún lado.
-
-Cada persona que vaya a administrar el visor necesita su propio token, con acceso de escritura al repositorio.
+Escribe la clave de publicación y pulsa **Entrar**.
 
 ### 2. Modelos BIM
 
