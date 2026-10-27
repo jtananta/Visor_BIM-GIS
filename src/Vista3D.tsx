@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { fueraDeFoco, type EstadoVisor } from './App';
+import { urlTeselaEsri, zoomMaxEsri } from './esri';
 import { colorDe, crearProyeccion, ubicacionModelo, unirCajas, type CapaFija, type Caja, type Estructura } from './datos';
 
 interface Pieza {
@@ -206,6 +207,14 @@ export default function Vista3D(s: EstadoVisor) {
   useEffect(() => {
     const m = motor.current;
     if (!m) return;
+    // Un modelo subido en esta sesión reemplaza al publicado con el mismo código.
+    for (const x of s.datos.manifest.modelos) {
+      const previo = m.modelos.get(x.codigo);
+      if (!previo || previo.userData.glb === x.glb) continue;
+      m.escena.remove(previo);
+      m.piezas = m.piezas.filter((p) => p.meta.modelo_codigo !== x.codigo);
+      m.modelos.delete(x.codigo);
+    }
     const faltan = s.datos.manifest.modelos.filter((x) => !s.ocultos.has(x.codigo) && !m.modelos.has(x.codigo));
     if (!faltan.length) return;
     let cancelado = false;
@@ -218,10 +227,11 @@ export default function Vista3D(s: EstadoVisor) {
       for (const mod of faltan) {
         if (cancelado) return;
         try {
-          const gltf = await cargarGlb(loader, `data/${mod.glb}`);
+          const gltf = await cargarGlb(loader, mod.glb.startsWith('blob:') ? mod.glb : `data/${mod.glb}`);
           if (cancelado || !motor.current) return;
           const raiz = gltf.scene;
           raiz.name = mod.codigo;
+          raiz.userData.glb = mod.glb;
           raiz.traverse((o) => {
             const mesh = o as THREE.Mesh;
             if (!mesh.isMesh) return;
@@ -375,61 +385,67 @@ function crearSuelo(
     return suelo;
   }
 
-  // Rango de teselas que cubre la caja, a un zoom que quepa en un lienzo de 4096 px.
-  const [lo1, la1] = proy.aLonLat(c[0], c[1]);
-  const [lo2, la2] = proy.aLonLat(c[2], c[3]);
-  let z = 18;
-  let x0 = 0, x1 = 0, y0 = 0, y1 = 0;
-  for (; z >= 12; z--) {
-    const [ax, ay] = merc(Math.min(lo1, lo2), Math.max(la1, la2), z);
-    const [bx, by] = merc(Math.max(lo1, lo2), Math.min(la1, la2), z);
-    x0 = Math.floor(ax); y0 = Math.floor(ay); x1 = Math.floor(bx); y1 = Math.floor(by);
-    if ((x1 - x0 + 1) * 256 <= 4096 && (y1 - y0 + 1) * 256 <= 4096) break;
-  }
-  const lienzo = document.createElement('canvas');
-  lienzo.width = (x1 - x0 + 1) * 256;
-  lienzo.height = (y1 - y0 + 1) * 256;
-  const ctx = lienzo.getContext('2d')!;
-
-  // UV de cada vértice: local → UTM → lon/lat → píxel Mercator del lienzo.
-  for (let i = 0; i < pos.count; i++) {
-    const [lon, lat] = proy.aLonLat(pos.getX(i) + origen.e, -pos.getZ(i) + origen.n);
-    const [mx, my] = merc(lon, lat, z);
-    uv.setXY(i, (mx - x0) / (x1 - x0 + 1), 1 - (my - y0) / (y1 - y0 + 1));
-  }
-  uv.needsUpdate = true;
-
-  const total = (x1 - x0 + 1) * (y1 - y0 + 1);
-  let hechas = 0;
-  let fallas = 0;
-  const textura = new THREE.CanvasTexture(lienzo);
-  textura.colorSpace = THREE.SRGBColorSpace;
-  textura.anisotropy = 8;
-  for (let tx = x0; tx <= x1; tx++) {
-    for (let ty = y0; ty <= y1; ty++) {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        ctx.drawImage(img, (tx - x0) * 256, (ty - y0) * 256);
-        terminar();
-      };
-      img.onerror = () => { fallas++; terminar(); };
-      img.src = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${tx}`;
+  // El zoom de las teselas no pasa del último con imagen real en la zona (ver esri.ts).
+  const [loC, laC] = proy.aLonLat((c[0] + c[2]) / 2, (c[1] + c[3]) / 2);
+  void zoomMaxEsri(loC, laC).then((zmax) => {
+    // Rango de teselas que cubre la caja, a un zoom que quepa en un lienzo de 4096 px.
+    const [lo1, la1] = proy.aLonLat(c[0], c[1]);
+    const [lo2, la2] = proy.aLonLat(c[2], c[3]);
+    let z = zmax;
+    let x0 = 0, x1 = 0, y0 = 0, y1 = 0;
+    for (; z >= 12; z--) {
+      const [ax, ay] = merc(Math.min(lo1, lo2), Math.max(la1, la2), z);
+      const [bx, by] = merc(Math.max(lo1, lo2), Math.min(la1, la2), z);
+      x0 = Math.floor(ax); y0 = Math.floor(ay); x1 = Math.floor(bx); y1 = Math.floor(by);
+      if ((x1 - x0 + 1) * 256 <= 4096 && (y1 - y0 + 1) * 256 <= 4096) break;
     }
-  }
-  function terminar() {
-    hechas++;
-    if (hechas < total) return;
-    if (fallas === total) { sinImagen(); return; }
-    try {
-      mat.map = textura;
-      mat.color.set('#FFFFFF');
-      mat.needsUpdate = true;
-      textura.needsUpdate = true;
-    } catch {
-      sinImagen();
+    const lienzo = document.createElement('canvas');
+    lienzo.width = (x1 - x0 + 1) * 256;
+    lienzo.height = (y1 - y0 + 1) * 256;
+    const ctx = lienzo.getContext('2d')!;
+    ctx.fillStyle = '#D5DBD0'; // donde falte una tesela queda el color del suelo liso
+    ctx.fillRect(0, 0, lienzo.width, lienzo.height);
+
+    // UV de cada vértice: local → UTM → lon/lat → píxel Mercator del lienzo.
+    for (let i = 0; i < pos.count; i++) {
+      const [lon, lat] = proy.aLonLat(pos.getX(i) + origen.e, -pos.getZ(i) + origen.n);
+      const [mx, my] = merc(lon, lat, z);
+      uv.setXY(i, (mx - x0) / (x1 - x0 + 1), 1 - (my - y0) / (y1 - y0 + 1));
     }
-    pedirRender();
-  }
+    uv.needsUpdate = true;
+
+    const total = (x1 - x0 + 1) * (y1 - y0 + 1);
+    let hechas = 0;
+    let fallas = 0;
+    const textura = new THREE.CanvasTexture(lienzo);
+    textura.colorSpace = THREE.SRGBColorSpace;
+    textura.anisotropy = 8;
+    for (let tx = x0; tx <= x1; tx++) {
+      for (let ty = y0; ty <= y1; ty++) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          ctx.drawImage(img, (tx - x0) * 256, (ty - y0) * 256);
+          terminar();
+        };
+        img.onerror = () => { fallas++; terminar(); };
+        img.src = urlTeselaEsri(z, ty, tx);
+      }
+    }
+    function terminar() {
+      hechas++;
+      if (hechas < total) return;
+      if (fallas === total) { sinImagen(); return; }
+      try {
+        mat.map = textura;
+        mat.color.set('#FFFFFF');
+        mat.needsUpdate = true;
+        textura.needsUpdate = true;
+      } catch {
+        sinImagen();
+      }
+      pedirRender();
+    }
+  });
   return suelo;
 }

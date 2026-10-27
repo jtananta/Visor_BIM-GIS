@@ -217,3 +217,24 @@ li.sin-modelo { opacity: 0.75; }
 .error-texto { color: #c62828; }
 .vista-previa { background: var(--fondo); border-radius: 8px; padding: 8px 10px; font-size: 13px; }
 @media (max-width: 760px) { .campos { grid-template-columns: 1fr; } }
+
+/* Subir IFC desde el visor */
+.btn-subir { background: var(--azul); border-color: var(--azul); color: #fff; }
+.btn-subir:hover { background: var(--azul-osc); color: #fff; }
+.modal-fondo { position: fixed; inset: 0; z-index: 2000; background: rgba(15, 28, 42, 0.45); display: grid; place-items: center; padding: 16px; }
+.modal { width: min(520px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; background: var(--panel); color: var(--tinta); border: 1px solid var(--borde); border-radius: 14px; box-shadow: var(--sombra); padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.modal h2 { margin: 0; font-size: 17px; }
+.modal p { margin: 0; line-height: 1.5; }
+.lista-ifc { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.lista-ifc li { border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.lista-ifc-cab { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.lista-ifc-cab strong { overflow-wrap: anywhere; }
+.etiqueta { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 2px 8px; white-space: nowrap; background: var(--fondo); color: var(--sutil); }
+.etiqueta.listo { color: #b07a10; }
+.etiqueta.publicado { color: #2e8b57; }
+.etiqueta.error { color: #c62828; }
+.campo { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--sutil); }
+.campo select, .campo input { font: inherit; font-size: 13px; padding: 7px 9px; border: 1px solid var(--borde); border-radius: 8px; background: var(--fondo); color: var(--tinta); min-width: 0; width: 100%; }
+.publicar-ifc { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--borde); padding-top: 12px; }
+.enlace-admin { color: var(--azul); text-align: center; }
+@media (max-width: 760px) { .btn-subir { padding: 7px 10px; } }

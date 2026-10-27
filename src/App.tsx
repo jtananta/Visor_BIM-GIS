@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { cargarDatos, compararNatural, unirCajas, type Caja, type Datos, type Estructura, type ModoColor } from './datos';
+import type { Previa } from './SubirIfc';
 import Panel from './Panel';
 import Ficha from './Ficha';
 import Leyenda from './Leyenda';
@@ -7,6 +8,8 @@ import PlanoGeneral from './PlanoGeneral';
 
 // three.js solo se descarga cuando alguien abre la vista 3D.
 const Vista3D = lazy(() => import('./Vista3D'));
+// La conversión de IFC solo se descarga al pulsar «Subir IFC».
+const SubirIfc = lazy(() => import('./SubirIfc'));
 
 type Vista = 'plano' | '3d';
 
@@ -50,6 +53,7 @@ export default function App() {
   const [seleccion, setSeleccion] = useState<Estructura | null>(null);
   const [encuadre, setEncuadre] = useState<Encuadre | null>(null);
   const [panelAbierto, setPanelAbierto] = useState(() => window.innerWidth > 760);
+  const [subiendo, setSubiendo] = useState(false);
   const ultimoEncuadre = useRef<Caja | null>(null);
 
   useEffect(() => {
@@ -102,6 +106,18 @@ export default function App() {
 
   const reportarEncuadre = useCallback((c: Caja) => { ultimoEncuadre.current = c; }, []);
 
+  /** Modelos recién convertidos: se ven en este navegador antes de publicarlos (o aunque no se publiquen). */
+  const verAqui = useCallback((previas: Previa[]) => {
+    const codigos = new Set(previas.map((p) => p.modelo.codigo));
+    setDatos((d) => d && {
+      ...d,
+      manifest: { ...d.manifest, modelos: [...d.manifest.modelos.filter((m) => !codigos.has(m.codigo)), ...previas.map((p) => p.modelo)] },
+      trazado: { ...d.trazado, features: [...d.trazado.features.filter((f) => !codigos.has(String(f.properties?.modelo_codigo))), ...(previas.flatMap((p) => p.features) as Datos['trazado']['features'])] },
+    });
+    setOcultos((prev) => { const next = new Set(prev); codigos.forEach((c) => next.delete(c)); return next; });
+    encuadrar(unirCajas(previas.map((p) => p.modelo.bbox_utm)));
+  }, [encuadrar]);
+
   if (error) return <div className="pantalla-mensaje">{error}</div>;
   if (!datos) return <div className="pantalla-mensaje">Cargando el proyecto…</div>;
 
@@ -133,6 +149,7 @@ export default function App() {
           </select>
         </label>
         <button className="btn" onClick={verTodo}>Ver todo</button>
+        <button className="btn btn-subir" onClick={() => setSubiendo(true)}>Subir IFC</button>
       </header>
 
       <div className="cuerpo">
@@ -167,6 +184,11 @@ export default function App() {
           )}
         </main>
       </div>
+      {subiendo && (
+        <Suspense fallback={null}>
+          <SubirIfc datos={datos} verAqui={verAqui} cerrar={() => setSubiendo(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }

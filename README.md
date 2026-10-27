@@ -11,6 +11,12 @@ Al hacer clic en una estructura muestra solo información general: nombre, compo
 Todo lo que ve el visor está en `public/data/`. Cada cambio que se guarda en el repositorio hace que Vercel vuelva a publicar el sitio solo, en uno o dos minutos.
 Hay dos formas de cambiar esos datos: desde la página de administración (lo normal) o con los scripts de `pipeline/` (para cargas masivas).
 
+## Subir IFC desde el visor
+
+El botón **Subir IFC** de la barra superior convierte el IFC en el navegador y muestra el modelo al instante, solo para quien lo subió.
+Con **Publicar para todos** queda en el link público. La primera vez pide el token de GitHub (ver abajo).
+Para quitar modelos, cargar el catálogo o las capas GIS, usa la página de administración.
+
 ## Página de administración (`#admin`)
 
 ### 1. Crear el token de GitHub (una sola vez por computadora)

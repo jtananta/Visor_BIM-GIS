@@ -9,6 +9,25 @@ export interface Conexion {
   token: string;
 }
 
+const CLAVE = 'visor-gerencial-conexion';
+
+/** Conexión recordada en este navegador (nunca sale de él). */
+export function leerConexion(): Conexion {
+  try {
+    const c = JSON.parse(localStorage.getItem(CLAVE) ?? '{}');
+    return { repo: c.repo ?? '', rama: c.rama ?? 'main', token: c.token ?? '' };
+  } catch {
+    return { repo: '', rama: 'main', token: '' };
+  }
+}
+
+export function guardarConexion(c: Conexion, recordar: boolean) {
+  try {
+    if (recordar) localStorage.setItem(CLAVE, JSON.stringify(c));
+    else localStorage.removeItem(CLAVE);
+  } catch { /* almacenamiento bloqueado: solo dura esta sesión */ }
+}
+
 /** Carpeta del repositorio donde viven los datos que lee el visor. */
 export const RAIZ_DATOS = 'public/data/';
 

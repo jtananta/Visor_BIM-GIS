@@ -3,6 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { fueraDeFoco, type EstadoVisor } from './App';
 import { colorDe, crearProyeccion, unirCajas, type Caja, type Estructura } from './datos';
+import { urlTeselaEsri, zoomMaxEsri } from './esri';
 import { leerVector } from './gis';
 
 type Base = 'sat' | 'osm' | 'none';
@@ -121,12 +122,18 @@ export default function PlanoGeneral(s: EstadoVisor) {
     base.current?.remove();
     base.current = null;
     if (tipoBase === 'sat') {
-      base.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        maxZoom: 20, maxNativeZoom: 19, attribution: 'Imágenes © Esri',
-      }).addTo(m);
+      const { lat, lon } = s.datos.manifest.origen;
+      let vigente = true;
+      void zoomMaxEsri(lon, lat).then((zmax) => {
+        if (!vigente || !mapa.current) return;
+        base.current = L.tileLayer(urlTeselaEsri('{z}', '{y}', '{x}'), {
+          maxZoom: 21, maxNativeZoom: zmax, attribution: 'Imágenes © Esri',
+        }).addTo(mapa.current);
+      });
+      return () => { vigente = false; };
     } else if (tipoBase === 'osm') {
       base.current = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 20, maxNativeZoom: 19, attribution: '© OpenStreetMap',
+        maxZoom: 21, maxNativeZoom: 19, attribution: '© OpenStreetMap',
       }).addTo(m);
     }
   }, [tipoBase]);

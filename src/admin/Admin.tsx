@@ -3,36 +3,9 @@ import { compararNatural, type CapaFija, type Componente, type Manifest, type Mo
 import { leerVector } from '../gis';
 import { aCsv, CAMPOS_COMPONENTE, leerExcel, ubicacionDe } from './catalogo';
 import type { Proyecto, Reglas, Resultado } from './convertir';
-import type { Pedido } from './convertir.worker';
-import { leerTexto, probarConexion, publicar, RAIZ_DATOS, type Cambios, type Conexion } from './github';
+import { guardarConexion, leerConexion, leerTexto, probarConexion, publicar, RAIZ_DATOS, type Cambios, type Conexion } from './github';
+import { agregarModelos, archivosModelos, convertirEnWorker, parseCsv } from './modelos';
 import { geotiffAWebp } from './raster';
-
-const CLAVE = 'visor-gerencial-conexion';
-
-function leerConexion(): Conexion {
-  try {
-    const c = JSON.parse(localStorage.getItem(CLAVE) ?? '{}');
-    return { repo: c.repo ?? '', rama: c.rama ?? 'main', token: c.token ?? '' };
-  } catch {
-    return { repo: '', rama: 'main', token: '' };
-  }
-}
-
-function parseCsv(t: string): Record<string, string>[] {
-  const lineas = t.replace(/^﻿/, '').split(/\r?\n/).filter((l) => l.trim());
-  const partir = (l: string) => {
-    const out: string[] = []; let cur = ''; let q = false;
-    for (let i = 0; i < l.length; i++) {
-      const c = l[i];
-      if (q) { if (c === '"' && l[i + 1] === '"') { cur += '"'; i++; } else if (c === '"') q = false; else cur += c; }
-      else if (c === '"') q = true; else if (c === ',') { out.push(cur); cur = ''; } else cur += c;
-    }
-    out.push(cur);
-    return out;
-  };
-  const cab = lineas.length ? partir(lineas[0]) : [];
-  return lineas.slice(1).map((l) => { const v = partir(l); return Object.fromEntries(cab.map((k, i) => [k, v[i] ?? ''])); });
-}
 
 interface Pendiente {
   archivo: string;
@@ -97,10 +70,7 @@ export default function Admin() {
     setOcupado('Conectando con GitHub…');
     try {
       await probarConexion(con);
-      try {
-        if (recordar) localStorage.setItem(CLAVE, JSON.stringify(con));
-        else localStorage.removeItem(CLAVE);
-      } catch { /* almacenamiento bloqueado: solo dura esta sesión */ }
+      guardarConexion(con, recordar);
       await recargar();
       setConectado(true);
     } catch (e) {
@@ -162,32 +132,17 @@ export default function Admin() {
     }
   };
 
-  const convertirUno = (f: File) => new Promise<void>((fin) => {
+  const convertirUno = async (f: File) => {
     const actualizar = (patch: Partial<Pendiente>) => setPendientes((l) => l.map((x) => (x.archivo === f.name ? { ...x, ...patch } : x)));
     actualizar({ estado: 'convirtiendo', texto: 'Leyendo el archivo…' });
-    const worker = new Worker(new URL('./convertir.worker.ts', import.meta.url), { type: 'module' });
-    worker.onmessage = (ev) => {
-      const m = ev.data;
-      if (m.tipo === 'avance') actualizar({ texto: m.texto, avance: m.fraccion ?? 0 });
-      if (m.tipo === 'listo') {
-        const r: Resultado = m.resultado;
-        actualizar({ estado: 'listo', avance: 1, texto: 'Listo para publicar', resultado: r, componente: String(r.modelo.componente ?? '') });
-        worker.terminate(); fin();
-      }
-      if (m.tipo === 'error') {
-        actualizar({ estado: 'error', texto: `No se pudo convertir: ${m.mensaje}` });
-        worker.terminate(); fin();
-      }
-    };
-    worker.onerror = (e) => { actualizar({ estado: 'error', texto: `No se pudo convertir: ${e.message}` }); worker.terminate(); fin(); };
-    f.arrayBuffer().then((datos) => {
-      const pedido: Pedido = {
-        datos, archivo: f.name, reglas: reglas!, proyecto: proyecto!, componentes: repo?.componentes ?? [], componente: '',
-        wasmDir: new URL('wasm/', document.baseURI).href,
-      };
-      worker.postMessage(pedido, [datos]);
-    });
-  });
+    try {
+      const r = await convertirEnWorker(f, { reglas: reglas!, proyecto: proyecto!, componentes: repo?.componentes ?? [] },
+        (texto, avance) => actualizar({ texto, avance }));
+      actualizar({ estado: 'listo', avance: 1, texto: 'Listo para publicar', resultado: r, componente: String(r.modelo.componente ?? '') });
+    } catch (e) {
+      actualizar({ estado: 'error', texto: `No se pudo convertir: ${e instanceof Error ? e.message : e}` });
+    }
+  };
 
   const publicarModelos = async () => {
     if (!repo) return;
@@ -197,7 +152,7 @@ export default function Admin() {
     try {
       const cambios: Cambios = {};
       let modelos: Modelo[] = repo.manifest.modelos.filter((m) => !quitar.has(m.codigo));
-      let features = repo.trazado.features.filter((f) => !quitar.has(String(f.properties?.modelo_codigo)));
+      const features = repo.trazado.features.filter((f) => !quitar.has(String(f.properties?.modelo_codigo)));
       const catalogo = repo.catalogo.filter((c) => !quitar.has(c.codigo));
       for (const cod of quitar) cambios[`${RAIZ_DATOS}models/${cod}.glb`] = null;
 
@@ -211,23 +166,8 @@ export default function Admin() {
         return { ...m, ...ub };
       });
 
-      for (const p of listos) {
-        const r = p.resultado!;
-        const ub = ubicacionDe(repo.componentes.find((c) => c.componente === p.componente), p.componente);
-        const modelo = { ...(r.modelo as unknown as Modelo), ...ub };
-        modelos = [...modelos.filter((m) => m.codigo !== r.codigo), modelo];
-        features = [...features.filter((f) => f.properties?.modelo_codigo !== r.codigo),
-          ...r.features.map((f) => ({ ...f, properties: { ...f.properties, ...ub } }))];
-        const i = catalogo.findIndex((c) => c.codigo === r.codigo);
-        const fila = { codigo: r.codigo, modelo: r.descripcion, componente: p.componente, descripcion_ifc: r.edificio, revisado: 'sí' };
-        if (i >= 0) catalogo[i] = fila; else catalogo.push(fila);
-        cambios[`${RAIZ_DATOS}models/${r.codigo}.glb`] = r.glb;
-      }
-
-      modelos.sort((a, b) => compararNatural(a.codigo, b.codigo));
-      cambios[`${RAIZ_DATOS}manifest.json`] = JSON.stringify({ ...repo.manifest, modelos }, null, 2);
-      cambios[`${RAIZ_DATOS}trazado.geojson`] = JSON.stringify({ type: 'FeatureCollection', features });
-      cambios[`${RAIZ_DATOS}catalogo.csv`] = aCsv(catalogo, ['codigo', 'modelo', 'componente', 'descripcion_ifc', 'revisado']);
+      const d = agregarModelos({ modelos, features, catalogo }, listos.map((p) => ({ resultado: p.resultado!, componente: p.componente })), repo.componentes, cambios);
+      archivosModelos(repo.manifest, d, cambios);
       const partes = [
         listos.length ? `agrega/actualiza ${listos.map((p) => p.resultado!.descripcion).join(', ')}` : '',
         quitar.size ? `quita ${quitar.size} modelo(s)` : '',
