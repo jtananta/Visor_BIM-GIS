@@ -6,6 +6,7 @@ import type { Proyecto, Reglas, Resultado } from './convertir';
 import { guardarConexion, leerConexion, leerTexto, probarConexion, publicar, RAIZ_DATOS, type Cambios, type Conexion } from './github';
 import { agregarModelos, archivosModelos, convertirEnWorker, parseCsv } from './modelos';
 import { geotiffAWebp } from './raster';
+import { esGeotiffDeElevaciones, leerSuperficie } from './superficie';
 
 interface Pendiente {
   archivo: string;
@@ -19,7 +20,7 @@ interface Pendiente {
 interface CapaNueva {
   nombre: string;
   archivo: string;
-  tipo: 'raster' | 'vector';
+  tipo: CapaFija['tipo'];
   datos: Uint8Array;
   extra: Partial<CapaFija>;
 }
@@ -219,7 +220,11 @@ export default function Admin() {
     const slug = base.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'capa';
     setOcupado(`Preparando «${f.name}»…`);
     try {
-      if (/\.(tif|tiff)$/i.test(f.name)) {
+      if (/\.xml$/i.test(f.name) || (/\.(tif|tiff)$/i.test(f.name) && await esGeotiffDeElevaciones(await f.arrayBuffer()))) {
+        // Superficie topográfica: se ve como relieve en la vista 3D.
+        const r = await leerSuperficie(f, repo?.manifest.epsg ?? 32717, repo?.manifest.origen ?? proyecto!.origen, setOcupado);
+        setCapasNuevas((l) => [...l, { nombre: r.nombre, archivo: `capas/${slug}.bin`, tipo: 'superficie', datos: r.bin, extra: { grilla: r.grilla } }]);
+      } else if (/\.(tif|tiff)$/i.test(f.name)) {
         const r = await geotiffAWebp(await f.arrayBuffer(), setOcupado);
         setCapasNuevas((l) => [...l, { nombre: base.replace(/_/g, ' '), archivo: `capas/${slug}.webp`, tipo: 'raster', datos: r.webp, extra: { bounds: r.bounds } }]);
         if (!suelo) setSuelo(`capas/${slug}.webp`);
@@ -230,7 +235,7 @@ export default function Admin() {
         setCapasNuevas((l) => [...l, { nombre: base.replace(/_/g, ' '), archivo: `capas/${slug}.geojson`, tipo: 'vector',
           datos: new TextEncoder().encode(JSON.stringify(gj)), extra: { color: colores[n % colores.length] } }]);
       } else {
-        throw new Error('el formato no se reconoce. Usa GeoTIFF, GeoJSON, KML o un Shapefile comprimido en .zip.');
+        throw new Error('el formato no se reconoce. Usa GeoTIFF, GeoJSON, KML, un Shapefile comprimido en .zip o un LandXML.');
       }
     } catch (e) {
       setAviso({ tipo: 'error', texto: `«${f.name}»: ${e instanceof Error ? e.message : e}` });
@@ -358,7 +363,8 @@ export default function Admin() {
 
             <section className="tarjeta">
               <h2>4. Capas GIS fijas</h2>
-              <p className="sutil">Ortofotos y rasters (GeoTIFF) o mapas GIS (GeoJSON, KML o Shapefile en .zip). Todos los que abran el link las ven.
+              <p className="sutil">Ortofotos y rasters (GeoTIFF), mapas GIS (GeoJSON, KML o Shapefile en .zip) y superficies topográficas
+                (GeoTIFF de elevaciones o LandXML de Civil 3D, que se ven con relieve en la vista 3D). Todos los que abran el link las ven.
                 Una ortofoto marcada como suelo se usa además como terreno de la vista 3D.</p>
               <div className="tabla-scroll"><table className="tabla">
                 <thead><tr><th>Capa</th><th>Tipo</th><th>Suelo 3D</th><th /></tr></thead>
@@ -367,7 +373,7 @@ export default function Admin() {
                   {[...repo.capas.map((c) => ({ ...c, nueva: false })), ...capasNuevas.map((c) => ({ ...c, ...c.extra, visible: true, nueva: true }))].map((c) => (
                     <tr key={c.archivo} className={capasQuitar.has(c.archivo) ? 'tachado' : c.nueva ? 'pendiente' : ''}>
                       <td><strong>{c.nombre}</strong>{c.nueva && <span className="sutil bloque">Nueva</span>}</td>
-                      <td>{c.tipo === 'raster' ? 'Ortofoto / ráster' : 'Mapa GIS'}</td>
+                      <td>{{ raster: 'Ortofoto / ráster', vector: 'Mapa GIS', superficie: 'Superficie 3D' }[c.tipo]}</td>
                       <td>{c.tipo === 'raster' && <input type="radio" name="suelo" aria-label={`Usar ${c.nombre} como suelo 3D`} checked={suelo === c.archivo} onChange={() => setSuelo(c.archivo)} />}</td>
                       <td>{c.nueva
                         ? <button className="btn chico" onClick={() => setCapasNuevas((l) => l.filter((x) => x.archivo !== c.archivo))}>Descartar</button>
@@ -381,7 +387,7 @@ export default function Admin() {
                 <button className="btn" onClick={() => inCapa.current?.click()} disabled={!!ocupado}>Agregar capa…</button>
                 <button className="btn btn-primario angosto" onClick={publicarCapas} disabled={!hayCambiosCapas || !!ocupado}>Publicar capas</button>
               </div>
-              <input ref={inCapa} type="file" accept=".tif,.tiff,.geojson,.json,.kml,.zip" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) void agregarCapa(f); e.target.value = ''; }} />
+              <input ref={inCapa} type="file" accept=".tif,.tiff,.geojson,.json,.kml,.zip,.xml" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) void agregarCapa(f); e.target.value = ''; }} />
             </section>
           </>
         )}

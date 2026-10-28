@@ -90,7 +90,7 @@ export default function PlanoGeneral(s: EstadoVisor) {
 
     // Capas fijas del proyecto (pipeline/capas.py).
     const fijas: Capa[] = [];
-    for (const [i, c] of s.datos.capas.entries()) {
+    for (const [i, c] of s.datos.capas.filter((x) => x.tipo !== 'superficie').entries()) {
       const id = `fija-${i}`;
       const url = `data/${c.archivo}`;
       if (c.tipo === 'raster' && c.bounds) {

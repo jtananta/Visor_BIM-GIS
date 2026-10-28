@@ -139,7 +139,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .progreso { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; padding: 8px 14px; box-shadow: var(--sombra); font-size: 12px; z-index: 20; min-width: 220px; }
 .barra-progreso { height: 4px; background: var(--fondo); border-radius: 2px; margin-top: 6px; overflow: hidden; }
 .barra-progreso span { display: block; height: 100%; background: var(--azul); transition: width .2s; }
-.ayuda-3d { position: absolute; right: 12px; top: 12px; font-size: 11px; color: #3b4a56; background: rgba(255,255,255,.8); padding: 4px 8px; border-radius: 6px; z-index: 5; }
+.ayuda-3d { position: absolute; right: 12px; bottom: 12px; font-size: 11px; color: #3b4a56; background: rgba(255,255,255,.8); padding: 4px 8px; border-radius: 6px; z-index: 5; }
 
 .leaflet-container { font: inherit; background: #dfe5ea; }
 
@@ -238,3 +238,8 @@ li.sin-modelo { opacity: 0.75; }
 .publicar-ifc { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--borde); padding-top: 12px; }
 .enlace-admin { color: var(--azul); text-align: center; }
 @media (max-width: 760px) { .btn-subir { padding: 7px 10px; } }
+
+/* Terreno y superficies en la vista 3D */
+.icono-superficie { width: 10px; height: 10px; border-radius: 2px; background: linear-gradient(180deg, #b9844e, #e3cf7a 45%, #2f7d4f); flex-shrink: 0; }
+.clave-linea { display: flex; gap: 6px; padding: 0 4px; }
+.clave-linea input { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 5px 8px; border: 1px solid var(--borde); border-radius: 8px; background: var(--fondo); color: var(--tinta); }

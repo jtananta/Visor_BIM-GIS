@@ -48,15 +48,31 @@ export interface Componente {
 }
 
 /** Capa GIS fija del proyecto, preparada por pipeline/capas.py. */
+/** Grilla de una superficie topográfica en el CRS del proyecto (archivo .bin de Uint16). */
+export interface Grilla {
+  /** Esquina noroeste: este de la primera columna y norte de la primera fila, en el centro de la celda. */
+  e0: number;
+  n0: number;
+  paso: number;
+  ancho: number;
+  alto: number;
+  zmin: number;
+  zmax: number;
+}
+
 export interface CapaFija {
   nombre: string;
-  tipo: 'raster' | 'vector';
+  tipo: 'raster' | 'vector' | 'superficie';
   archivo: string;
   visible: boolean;
   color?: string;
   /** [[latS, lonO], [latN, lonE]] de la imagen en Web Mercator. */
   bounds?: [[number, number], [number, number]];
   suelo?: boolean;
+  /** Solo superficies: ubicación de la grilla de elevaciones. */
+  grilla?: Grilla;
+  /** Capa subida en este navegador y aún no publicada: su archivo vive en memoria. */
+  local?: Uint8Array;
 }
 
 export type Trazado = GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.LineString | GeoJSON.Point, Estructura>;

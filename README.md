@@ -33,6 +33,13 @@ Con **Publicar para todos** queda en el link público. La primera vez pide la cl
 Desde el visor se publican archivos de hasta 3 MB por modelo liviano. Un IFC de 100 MB suele dar menos de 1 MB.
 Para quitar modelos, cargar el catálogo o las capas GIS, usa la página de administración.
 
+## Terreno y superficies en la vista 3D
+
+- **Satélite / Relieve / Sin mapa**: el suelo plano con la imagen satelital, el mismo suelo con el relieve real del terreno (elevación pública SRTM de 30 m, teselas Terrarium de AWS) o sin suelo.
+- **Opacidad del terreno**: bájala para ver las tuberías y estructuras enterradas.
+- **Agregar superficie…**: carga una superficie topográfica propia en este navegador. Puede ser un GeoTIFF de elevaciones o un LandXML de Civil 3D (superficie TIN), en UTM WGS 84 zona 17S. Se dibuja coloreada por altura.
+  Con **Publicar** (pide la clave de publicación) queda para todos. Las superficies también se pueden subir desde `#admin`, en *Capas GIS fijas*.
+
 ## Página de administración (`#admin`)
 
 ### 1. Entrar
@@ -56,6 +63,7 @@ El estado de cada componente (Pendiente, En proceso, Completado, Observado) sale
 
 - **Ortofoto o ráster** (GeoTIFF en UTM WGS 84 o EPSG:4326): se convierte a una imagen liviana.
 - **Mapas GIS** (GeoJSON, KML o Shapefile comprimido en `.zip`).
+- **Superficies topográficas** (GeoTIFF de elevaciones de una banda o LandXML de Civil 3D): se ven con relieve en la vista 3D.
 - Marca **Suelo 3D** en una ortofoto para usarla como terreno de la vista 3D.
 
 ## Reglas de agrupación

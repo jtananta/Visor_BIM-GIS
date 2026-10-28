@@ -2,7 +2,7 @@
  * Conversión y publicación de modelos IFC, compartida por la página de administración y el botón
  * «Subir IFC» del visor.
  */
-import { compararNatural, type Componente, type Manifest, type Modelo } from '../datos';
+import { compararNatural, type CapaFija, type Componente, type Manifest, type Modelo } from '../datos';
 import { aCsv, ubicacionDe } from './catalogo';
 import type { Proyecto, Reglas, Resultado } from './convertir';
 import type { Pedido } from './convertir.worker';
@@ -121,4 +121,21 @@ export async function publicarModelos(con: Conexion, listos: Listo[], componente
   }, listos, componentes, cambios);
   archivosModelos(manifest, d, cambios);
   await publicar(con, cambios, `Visor: agrega/actualiza ${listos.map((l) => l.resultado.descripcion).join(', ')}`, avisar);
+}
+
+/** Agrega (o reemplaza, si tiene el mismo archivo) una capa fija y su archivo, leyendo antes capas.json del repositorio. */
+export async function publicarCapa(con: Conexion, capa: CapaFija, datos: Uint8Array, avisar: (t: string) => void): Promise<void> {
+  avisar('Leyendo las capas publicadas…');
+  const txt = await leerTexto(con, `${RAIZ_DATOS}capas/capas.json`);
+  const capas: CapaFija[] = txt ? JSON.parse(txt) : [];
+  const todas = [...capas.filter((c) => c.archivo !== capa.archivo), capa];
+  await publicar(con, {
+    [`${RAIZ_DATOS}${capa.archivo}`]: datos,
+    [`${RAIZ_DATOS}capas/capas.json`]: JSON.stringify(todas, null, 2),
+  }, `Visor: agrega/actualiza la superficie ${capa.nombre}`, avisar);
+}
+
+/** Nombre de archivo seguro a partir del nombre visible. */
+export function slug(nombre: string): string {
+  return nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'capa';
 }

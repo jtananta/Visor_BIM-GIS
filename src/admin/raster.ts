@@ -6,7 +6,7 @@ import proj4 from 'proj4';
 
 const MAX_PX = 3072;
 
-function defCrs(epsg: number): string {
+export function defCrs(epsg: number): string {
   if (epsg === 4326) return 'EPSG:4326';
   if (Math.floor(epsg / 100) === 326 || Math.floor(epsg / 100) === 327) {
     return `+proj=utm +zone=${epsg % 100} ${Math.floor(epsg / 100) === 327 ? '+south ' : ''}+datum=WGS84 +units=m +no_defs`;

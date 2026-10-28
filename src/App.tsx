@@ -1,5 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { cargarDatos, compararNatural, unirCajas, type Caja, type Datos, type Estructura, type ModoColor } from './datos';
+import { cargarDatos, compararNatural, unirCajas, type CapaFija, type Caja, type Datos, type Estructura, type ModoColor } from './datos';
 import type { Previa } from './SubirIfc';
 import Panel from './Panel';
 import Ficha from './Ficha';
@@ -39,6 +39,8 @@ export interface EstadoVisor {
   seleccion: Estructura | null;
   encuadre: Encuadre | null;
   seleccionar: (e: Estructura | null) => void;
+  /** Agrega o reemplaza una capa (por ejemplo, una superficie recién subida) en este navegador. */
+  agregarCapa: (c: CapaFija) => void;
   /** Las vistas avisan lo que muestran para conservar el encuadre al cambiar de vista. */
   reportarEncuadre: (c: Caja) => void;
 }
@@ -106,6 +108,10 @@ export default function App() {
 
   const reportarEncuadre = useCallback((c: Caja) => { ultimoEncuadre.current = c; }, []);
 
+  const agregarCapa = useCallback((c: CapaFija) => {
+    setDatos((d) => d && { ...d, capas: [...d.capas.filter((x) => x.archivo !== c.archivo), c] });
+  }, []);
+
   /** Modelos recién convertidos: se ven en este navegador antes de publicarlos (o aunque no se publiquen). */
   const verAqui = useCallback((previas: Previa[]) => {
     const codigos = new Set(previas.map((p) => p.modelo.codigo));
@@ -124,7 +130,7 @@ export default function App() {
   const estado: EstadoVisor = {
     datos, sectores, paquetes, ocultos, foco, modoColor, seleccion,
     encuadre: encuadre ?? (cajaTotal ? { caja: cajaTotal, n: 0 } : null),
-    seleccionar: setSeleccion, reportarEncuadre,
+    seleccionar: setSeleccion, reportarEncuadre, agregarCapa,
   };
 
   return (
