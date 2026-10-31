@@ -13,7 +13,7 @@ Hay dos formas de cambiar esos datos: desde la página de administración (lo no
 
 ## Dashboard
 
-Tercera pestaña del visor, junto a Plano general y Vista 3D. Muestra cantidades (metrados) del proyecto:
+Tercera pestaña del visor, junto a Plano general y Vista 3D. Es interactivo como Power BI: arriba hay filtros por sector, paquete, estado, tipo de estructura y modelo BIM, y un clic en una barra, un indicador de metrados, una fila de la tabla de paquetes o una estructura del mapa filtra todo el tablero (otro clic quita el filtro). Muestra cantidades (metrados) del proyecto:
 - **Estructura**: sectores, paquetes, componentes y modelos BIM publicados.
 - **Metrados modelados**: buzones y sumideros (und); tubería, box, canal y gaviones (ml).
 - **Estado de cada paquete** (En diseño, Diseño aprobado, En ejecución, Construido): en los indicadores, en las barras por sector, en el mapa (botón «Estado») y en la tabla de paquetes. Se cambia con «Editar estados» en la tabla y «Publicar» con la clave de publicación; se guarda en `public/data/paquetes.json`.
