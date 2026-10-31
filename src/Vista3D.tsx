@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { fueraDeFoco, type EstadoVisor } from './App';
 import { urlTeselaEsri, zoomMaxEsri } from './esri';
@@ -75,7 +76,9 @@ export default function Vista3D(s: EstadoVisor) {
     superficies: Map<string, THREE.Mesh>;
     pedirRender: () => void;
     volarA: (c: Caja, animar: boolean) => void;
+    etiquetas: THREE.Group;
   } | null>(null);
+  const [cargados, setCargados] = useState(0);
   const hover = useRef<string | null>(null);
   const [progreso, setProgreso] = useState<{ hechos: number; total: number } | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
@@ -106,6 +109,11 @@ export default function Vista3D(s: EstadoVisor) {
     renderer.setSize(el.clientWidth, el.clientHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     el.appendChild(renderer.domElement);
+    // Etiquetas de sector y paquete: HTML encima del lienzo, como en el plano general.
+    const rotulos = new CSS2DRenderer();
+    rotulos.setSize(el.clientWidth, el.clientHeight);
+    rotulos.domElement.className = 'rotulos-3d';
+    el.appendChild(rotulos.domElement);
 
     const escena = new THREE.Scene();
     escena.background = new THREE.Color(FONDO);
@@ -129,6 +137,7 @@ export default function Vista3D(s: EstadoVisor) {
         pendiente = false;
         if (controles.update()) pedirRender();
         renderer.render(escena, camara);
+        rotulos.render(escena, camara);
       });
     };
     controles.addEventListener('change', pedirRender);
@@ -169,10 +178,14 @@ export default function Vista3D(s: EstadoVisor) {
       anim = requestAnimationFrame(paso);
     };
 
-    motor.current = { renderer, escena, camara, controles, modelos: new Map(), piezas: [], suelo: null, superficies: new Map(), pedirRender, volarA };
+    const etiquetas = new THREE.Group();
+    etiquetas.name = 'etiquetas';
+    escena.add(etiquetas);
+    motor.current = { renderer, escena, camara, controles, modelos: new Map(), piezas: [], suelo: null, superficies: new Map(), pedirRender, volarA, etiquetas };
 
     const obs = new ResizeObserver(() => {
       renderer.setSize(el.clientWidth, el.clientHeight);
+      rotulos.setSize(el.clientWidth, el.clientHeight);
       camara.aspect = el.clientWidth / Math.max(1, el.clientHeight);
       camara.updateProjectionMatrix();
       pedirRender();
@@ -232,6 +245,7 @@ export default function Vista3D(s: EstadoVisor) {
       escena.traverse((o) => { if ((o as THREE.Mesh).geometry) (o as THREE.Mesh).geometry.dispose(); });
       renderer.dispose();
       el.removeChild(renderer.domElement);
+      el.removeChild(rotulos.domElement);
       motor.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -275,6 +289,8 @@ export default function Vista3D(s: EstadoVisor) {
           });
           m.escena.add(raiz);
           m.modelos.set(mod.codigo, raiz);
+          raiz.userData.techo = new THREE.Box3().setFromObject(raiz).max.y;
+          setCargados((n) => n + 1);
         } catch {
           errores.push(mod.modelo);
         }
@@ -287,6 +303,27 @@ export default function Vista3D(s: EstadoVisor) {
     })();
     return () => { cancelado = true; };
   }, [s.datos, s.ocultos]);
+
+  /* Etiqueta «Sector · Paquete» sobre cada paquete visible, como en el plano general ------------- */
+  useEffect(() => {
+    const m = motor.current;
+    if (!m) return;
+    for (const o of [...m.etiquetas.children]) { m.etiquetas.remove(o); (o as CSS2DObject).element.remove(); }
+    for (const paq of s.paquetes) {
+      const mods = s.datos.manifest.modelos.filter((x) => x.paquete === paq && !s.ocultos.has(x.codigo));
+      const caja = unirCajas(mods.map((x) => x.bbox_utm));
+      if (!caja) continue;
+      const techo = Math.max(0, ...mods.map((x) => Number(m.modelos.get(x.codigo)?.userData.techo ?? 0)));
+      const div = document.createElement('div');
+      div.className = `etiqueta-3d${s.foco && s.foco.campo !== 'componente' && !mods.some((x) => x[s.foco!.campo as 'sector' | 'paquete'] === s.foco!.valor) ? ' atenuada' : ''}`;
+      div.textContent = `${mods[0].sector} · ${paq}`;
+      const rot = new CSS2DObject(div);
+      rot.position.set((caja[0] + caja[2]) / 2 - origen.e, techo + 8, -((caja[1] + caja[3]) / 2 - origen.n));
+      rot.center.set(0.5, 1);
+      m.etiquetas.add(rot);
+    }
+    m.pedirRender();
+  }, [s.paquetes, s.datos, s.ocultos, s.foco, cargados, origen]);
 
   /* Suelo: la ortofoto del proyecto si hay una marcada como suelo; si no, la imagen satelital. ---- */
   useEffect(() => {
