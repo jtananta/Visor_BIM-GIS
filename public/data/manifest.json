@@ -676,6 +676,35 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000212",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000212",
+      "sector": "Sector 2",
+      "paquete": "Paquete 21",
+      "componente": "Componente 208",
+      "componente_desc": "Sistema de Drenaje Urbano Talara Alta 01",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000212.glb",
+      "estructuras": 27,
+      "tipos": {
+        "Buzón": 8,
+        "Tubería": 19
+      },
+      "metrados": {
+        "Buzón": {
+          "n": 8
+        },
+        "Tubería": {
+          "n": 19,
+          "ml": 395.36
+        }
+      },
+      "bbox_utm": [
+        472365.5380807895,
+        9491957.596669547,
+        472477.132508951,
+        9492107.424102373
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000214",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000214",
       "sector": "Sector 2",
