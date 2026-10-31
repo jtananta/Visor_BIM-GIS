@@ -45,8 +45,11 @@ export default function Tablero({ datos, sectores, verComponente }: Props) {
   const fijar = (d: Dim, v: string) => setF((x) => ({ ...x, [d]: v }));
   const hayFiltros = Object.values(f).some(Boolean);
 
-  const comps = useMemo(() => [...datos.componentes].sort((a, b) =>
-    compararNatural(a.sector, b.sector) || compararNatural(a.paquete, b.paquete) || compararNatural(a.componente, b.componente)), [datos.componentes]);
+  // Modelos asignados a un componente que no está en el Excel (p. ej. «por asignar») cuentan igual en su paquete.
+  const comps = useMemo(() => [...datos.componentes, ...datos.manifest.modelos
+    .filter((m, i, todos) => !datos.componentes.some((c) => c.componente === m.componente) && todos.findIndex((x) => x.componente === m.componente) === i)
+    .map((m): Componente => ({ sector: m.sector, paquete: m.paquete, componente: m.componente, descripcion: m.componente_desc || m.modelo, estado: 'Sin asignar', avance: '', responsable: '', fecha: '', observaciones: '' }))].sort((a, b) =>
+    compararNatural(a.sector, b.sector) || compararNatural(a.paquete, b.paquete) || compararNatural(a.componente, b.componente)), [datos.componentes, datos.manifest.modelos]);
   const metrados = useMemo(() => metradosPorModelo(datos), [datos]);
   const hayEstimados = [...metrados.values()].some((m) => m.estimado);
 

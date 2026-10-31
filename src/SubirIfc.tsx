@@ -96,6 +96,7 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
   };
 
   const porPublicar = items.filter((i) => i.estado === 'listo' && i.resultado);
+  const sinComponente = porPublicar.filter((i) => !datos.componentes.some((c) => c.componente === i.componente));
 
   const publicarTodo = async () => {
     setAviso(null);
@@ -172,7 +173,8 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
                 <label className="check"><input type="checkbox" checked={recordar} onChange={(e) => setRecordar(e.target.checked)} /> Recordar en este navegador</label>
               </>
             )}
-            <button className="btn btn-primario" onClick={publicarTodo} disabled={Boolean(ocupado) || !con.clave}>
+            {sinComponente.length > 0 && <div className="aviso-admin error" role="status">Elige el componente de {sinComponente.length === 1 ? sinComponente[0].archivo : `${sinComponente.length} IFC`} antes de publicar: no pude reconocerlo por el nombre ni por la ubicación.</div>}
+            <button className="btn btn-primario" onClick={publicarTodo} disabled={Boolean(ocupado) || !con.clave || sinComponente.length > 0}>
               Publicar para todos ({porPublicar.length})
             </button>
           </div>

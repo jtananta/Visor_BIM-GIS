@@ -272,6 +272,7 @@ export default function Admin() {
     }
   };
 
+  const faltaComponente = pendientes.some((p) => p.estado === 'listo' && !repo?.componentes.some((c) => c.componente === p.componente));
   const hayCambiosModelos = pendientes.some((p) => p.estado === 'listo') || quitar.size > 0 ||
     Object.entries(reasignar).some(([cod, v]) => repo?.manifest.modelos.find((m) => m.codigo === cod)?.componente !== v);
   const hayCambiosCapas = capasNuevas.length > 0 || capasQuitar.size > 0 || (repo && (repo.capas.find((c) => c.suelo)?.archivo ?? null) !== suelo);
@@ -342,7 +343,8 @@ export default function Admin() {
               </table></div>
               <div className="fila-acciones">
                 <button className="btn" onClick={() => inIfc.current?.click()}>Agregar IFC…</button>
-                <button className="btn btn-primario angosto" onClick={publicarModelos} disabled={!hayCambiosModelos || !!ocupado || pendientes.some((p) => p.estado === 'convirtiendo')}>Publicar modelos</button>
+                <button className="btn btn-primario angosto" onClick={publicarModelos} disabled={!hayCambiosModelos || faltaComponente || !!ocupado || pendientes.some((p) => p.estado === 'convirtiendo')}>Publicar modelos</button>
+                {faltaComponente && <span className="sutil">Elige el componente de cada IFC nuevo antes de publicar.</span>}
               </div>
               <input ref={inIfc} type="file" accept=".ifc" multiple hidden onChange={(e) => { agregarIfc(Array.from(e.target.files ?? [])); e.target.value = ''; }} />
             </section>

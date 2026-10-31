@@ -67,8 +67,11 @@ export function aCsv(filas: Record<string, unknown>[], campos: string[]): string
   return [campos.join(','), ...filas.map((f) => campos.map((c) => esc(f[c])).join(','))].join('\n') + '\n';
 }
 
+/** Palabras que no dicen nada del componente (incluido el texto de plantilla «INGRESAR NOMBRE DE PAQUETE»). */
+const VACIAS = new Set(['ingresar', 'nombre', 'paquete', 'componente', 'sector', 'modelo', 'proyecto', 'talara', 'drenaje', 'pluvial', 'integral']);
+
 function palabras(t: string): Set<string> {
-  const w = new Set((t.toLowerCase().match(/[a-záéíóúñ]{4,}/g) ?? []));
+  const w = new Set((t.toLowerCase().match(/[a-záéíóúñ]{4,}/g) ?? []).filter((x) => !VACIAS.has(x)));
   // Buzones, sumideros y tuberías son obras de "drenaje urbano" en el catálogo.
   if (['buzon', 'buzones', 'sumidero', 'sumideros', 'tuberia', 'tuberias', 'tubería', 'tuberías'].some((x) => w.has(x))) {
     w.add('drenaje'); w.add('urbano');
@@ -88,7 +91,8 @@ export function sugerirComponente(componentes: Componente[], descripcion: string
     const p = [...palabras(c.descripcion)].filter((w) => clave.has(w)).length;
     if (p > puntos || (p === puntos && mejor && c.descripcion.length < mejor.descripcion.length)) { mejor = c; puntos = p; }
   }
-  return mejor;
+  // Sin ninguna palabra en común no se adivina: quien sube el IFC elige el componente.
+  return puntos > 0 ? mejor : null;
 }
 
 export function ubicacionDe(c: Componente | null | undefined, componente = ''): Ubicacion {

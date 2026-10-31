@@ -354,3 +354,4 @@ li.sin-modelo { opacity: 0.75; }
 .botones-rama { display: inline-flex; gap: 2px; flex-shrink: 0; }
 .botones-rama button { width: 18px; height: 18px; padding: 0; display: grid; place-items: center; border: 1px solid var(--borde); border-radius: 4px; background: var(--panel); color: var(--sutil); font-size: 13px; font-weight: 700; line-height: 1; }
 .botones-rama button:hover { color: var(--azul); border-color: var(--azul); }
+.sector-nombre, .paquete-nombre { white-space: nowrap; }

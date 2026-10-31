@@ -357,10 +357,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000201",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000201",
-      "sector": "Sector 3",
-      "paquete": "Paquete 33",
-      "componente": "Componente 323",
-      "componente_desc": "Canal Negritos",
+      "sector": "Sector 2",
+      "paquete": "Paquete 20",
+      "componente": "Paquete 20 · por asignar",
+      "componente_desc": "IFC del Paquete 20 sin componente asignado",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000201.glb",
       "estructuras": 102,
       "tipos": {
@@ -385,10 +385,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000202",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000202",
-      "sector": "Sector 3",
-      "paquete": "Paquete 33",
-      "componente": "Componente 323",
-      "componente_desc": "Canal Negritos",
+      "sector": "Sector 2",
+      "paquete": "Paquete 20",
+      "componente": "Paquete 20 · por asignar",
+      "componente_desc": "IFC del Paquete 20 sin componente asignado",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000202.glb",
       "estructuras": 258,
       "tipos": {
@@ -423,10 +423,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000204",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000204",
-      "sector": "Sector 3",
-      "paquete": "Paquete 33",
-      "componente": "Componente 323",
-      "componente_desc": "Canal Negritos",
+      "sector": "Sector 2",
+      "paquete": "Paquete 20",
+      "componente": "Paquete 20 · por asignar",
+      "componente_desc": "IFC del Paquete 20 sin componente asignado",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000204.glb",
       "estructuras": 104,
       "tipos": {
@@ -456,10 +456,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000205",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000205",
-      "sector": "Sector 3",
-      "paquete": "Paquete 33",
-      "componente": "Componente 323",
-      "componente_desc": "Canal Negritos",
+      "sector": "Sector 2",
+      "paquete": "Paquete 20",
+      "componente": "Paquete 20 · por asignar",
+      "componente_desc": "IFC del Paquete 20 sin componente asignado",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000205.glb",
       "estructuras": 158,
       "tipos": {
@@ -484,10 +484,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000206",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000206",
-      "sector": "Sector 3",
-      "paquete": "Paquete 33",
-      "componente": "Componente 323",
-      "componente_desc": "Canal Negritos",
+      "sector": "Sector 2",
+      "paquete": "Paquete 20",
+      "componente": "Paquete 20 · por asignar",
+      "componente_desc": "IFC del Paquete 20 sin componente asignado",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000206.glb",
       "estructuras": 303,
       "tipos": {
@@ -522,10 +522,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000207",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000207",
-      "sector": "Sector 3",
-      "paquete": "Paquete 33",
-      "componente": "Componente 323",
-      "componente_desc": "Canal Negritos",
+      "sector": "Sector 2",
+      "paquete": "Paquete 20",
+      "componente": "Paquete 20 · por asignar",
+      "componente_desc": "IFC del Paquete 20 sin componente asignado",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000207.glb",
       "estructuras": 3,
       "tipos": {
@@ -550,10 +550,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000222",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000222",
-      "sector": "Sector 3",
-      "paquete": "Paquete 33",
-      "componente": "Componente 323",
-      "componente_desc": "Canal Negritos",
+      "sector": "Sector 2",
+      "paquete": "Paquete 20",
+      "componente": "Paquete 20 · por asignar",
+      "componente_desc": "IFC del Paquete 20 sin componente asignado",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000222.glb",
       "estructuras": 2,
       "tipos": {
@@ -578,10 +578,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000223",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000223",
-      "sector": "Sector 3",
-      "paquete": "Paquete 33",
-      "componente": "Componente 323",
-      "componente_desc": "Canal Negritos",
+      "sector": "Sector 2",
+      "paquete": "Paquete 20",
+      "componente": "Paquete 20 · por asignar",
+      "componente_desc": "IFC del Paquete 20 sin componente asignado",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000223.glb",
       "estructuras": 3,
       "tipos": {
