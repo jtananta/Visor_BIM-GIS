@@ -86,7 +86,18 @@ export interface Datos {
   /** Catálogo completo, incluidos los componentes que aún no tienen modelo. */
   componentes: Componente[];
   capas: CapaFija[];
+  /** Estado de obra de cada paquete (public/data/paquetes.json), editable desde el Dashboard. */
+  estadosPaquete: Record<string, string>;
 }
+
+/** Etapas de un paquete, de la más temprana a la más avanzada, con su color. */
+export const ESTADOS_PAQUETE: { estado: string; color: string }[] = [
+  { estado: 'En diseño', color: '#9AA3AE' },
+  { estado: 'Diseño aprobado', color: '#3B6FB6' },
+  { estado: 'En ejecución', color: '#E08A1E' },
+  { estado: 'Construido', color: '#2E8B57' },
+];
+export const colorEstadoPaquete = (e: string) => ESTADOS_PAQUETE.find((x) => x.estado === e)?.color ?? '#9AA3AE';
 
 /** Caja en el CRS del proyecto: [minE, minN, maxE, maxN]. */
 export type Caja = [number, number, number, number];
@@ -125,15 +136,16 @@ function parseCsv(texto: string): Record<string, string>[] {
 }
 
 export async function cargarDatos(base = 'data/'): Promise<Datos> {
-  const [manifest, trazado, compTxt, capas] = await Promise.all([
+  const [manifest, trazado, compTxt, capas, estadosPaquete] = await Promise.all([
     fetch(`${base}manifest.json`).then((r) => { if (!r.ok) throw new Error('manifest.json'); return r.json(); }),
     fetch(`${base}trazado.geojson`).then((r) => { if (!r.ok) throw new Error('trazado.geojson'); return r.json(); }),
     fetch(`${base}componentes.csv`).then((r) => (r.ok ? r.text() : '')).catch(() => ''),
     fetch(`${base}capas/capas.json`).then((r) => (r.ok ? r.json() : [])).catch(() => []),
+    fetch(`${base}paquetes.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
   ]);
   const componentes = parseCsv(compTxt).filter((f) => f.componente) as unknown as Componente[];
   for (const f of (trazado as Trazado).features) Object.assign(f.properties, ubicacionModelo(manifest, f.properties.modelo_codigo));
-  return { manifest, trazado, componentes, capas: Array.isArray(capas) ? capas : [] };
+  return { manifest, trazado, componentes, capas: Array.isArray(capas) ? capas : [], estadosPaquete: estadosPaquete && typeof estadosPaquete === 'object' ? (estadosPaquete as Record<string, string>) : {} };
 }
 
 /**

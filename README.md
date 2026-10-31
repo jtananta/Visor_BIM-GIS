@@ -16,6 +16,7 @@ Hay dos formas de cambiar esos datos: desde la página de administración (lo no
 Tercera pestaña del visor, junto a Plano general y Vista 3D. Muestra cantidades (metrados) del proyecto:
 - **Estructura**: sectores, paquetes, componentes y modelos BIM publicados.
 - **Metrados modelados**: buzones y sumideros (und); tubería, box, canal y gaviones (ml).
+- **Estado de cada paquete** (En diseño, Diseño aprobado, En ejecución, Construido): en los indicadores, en las barras por sector, en el mapa (botón «Estado») y en la tabla de paquetes. Se cambia con «Editar estados» en la tabla y «Publicar» con la clave de publicación; se guarda en `public/data/paquetes.json`.
 - **Paquetes por sector** y **componentes por paquete** (con y sin modelo).
 - **Mapa por tipo de estructura**.
 - **Metrados por paquete** y **por componente**, con botones para abrir cada uno en la planta o en 3D.

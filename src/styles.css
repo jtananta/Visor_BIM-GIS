@@ -272,6 +272,16 @@ li.sin-modelo { opacity: 0.75; }
 .tabla tr.grupo td { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--sutil); background: color-mix(in srgb, var(--borde) 30%, transparent); padding: 5px 8px; }
 .tabla tr.total td { font-weight: 700; border-top: 2px solid var(--borde); border-bottom: none; }
 .tabla td.cero { color: var(--sutil); }
+.segmento { display: inline-flex; border: 1px solid var(--borde); border-radius: 8px; overflow: hidden; }
+.segmento button { border: 0; background: var(--panel); padding: 4px 10px; font-size: 12px; font-weight: 600; color: var(--sutil); }
+.segmento button + button { border-left: 1px solid var(--borde); }
+.segmento button[aria-pressed="true"] { background: var(--azul); color: #fff; }
+.clave-chica { font: inherit; font-size: 12px; padding: 5px 8px; border: 1px solid var(--borde); border-radius: 8px; background: var(--fondo); color: var(--tinta); width: 170px; }
+.btn-guardar { background: var(--azul); border-color: var(--azul); color: #fff; }
+.btn-guardar:hover { background: var(--azul-osc); color: #fff; }
+.btn-guardar:disabled { opacity: .5; }
+.error-linea { color: #b42318; font-size: 13px; }
+.barra-nombre .punto { width: 8px; height: 8px; vertical-align: 1px; }
 .mapa-chico { flex: 1; min-height: 380px; border-radius: 8px; overflow: hidden; border: 1px solid var(--borde); }
 .barras { display: flex; flex-direction: column; gap: 6px; }
 .barra-fila { display: grid; grid-template-columns: 88px minmax(0, 1fr) 76px; align-items: center; gap: 10px; font-size: 13px; }
