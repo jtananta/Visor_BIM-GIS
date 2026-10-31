@@ -11,6 +11,17 @@ Al hacer clic en una estructura muestra solo información general: nombre, compo
 Todo lo que ve el visor está en `public/data/`. Cada cambio que se guarda en el repositorio hace que Vercel vuelva a publicar el sitio solo, en uno o dos minutos.
 Hay dos formas de cambiar esos datos: desde la página de administración (lo normal) o con los scripts de `pipeline/` (para cargas masivas).
 
+## Dashboard
+
+Tercera pestaña del visor, junto a Plano general y Vista 3D. Muestra:
+- **Indicadores**: componentes, componentes con modelo publicado, avance promedio y fecha de la última publicación.
+- **Avance por sector**: el promedio del % de avance de sus componentes.
+- **Mapa por estado**: cada estructura con el color del estado de su componente.
+- **Estado por paquete**: los componentes de cada paquete por estado, con cuántos tienen modelo.
+- **Tabla de componentes**: filtrable por sector, estado y «solo con modelo», con botones para abrir cada uno en la planta o en 3D.
+
+Todo sale del Excel de control (`componentes.csv`) y de los modelos publicados (`manifest.json`), así que se actualiza solo al publicar.
+
 ## Configurar la publicación (una sola vez)
 
 La publicación pasa por una función del propio sitio (`api/publicar.js`). El token de GitHub queda guardado en Vercel y nadie tiene que pegarlo en el navegador.

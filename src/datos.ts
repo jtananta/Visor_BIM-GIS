@@ -95,6 +95,8 @@ export type Caja = [number, number, number, number];
 function parseCsv(texto: string): Record<string, string>[] {
   const lineas = texto.replace(/^﻿/, '').split(/\r?\n/).filter((l) => l.trim());
   if (!lineas.length) return [];
+  // El separador sale de la cabecera: una descripción puede llevar «;» dentro («Diques (7; 8; 9)»).
+  const sep = lineas[0].includes(',') ? ',' : ';';
   const partir = (l: string) => {
     const out: string[] = [];
     let cur = '';
@@ -106,7 +108,7 @@ function parseCsv(texto: string): Record<string, string>[] {
         else if (c === '"') q = false;
         else cur += c;
       } else if (c === '"') q = true;
-      else if (c === ',' || c === ';') { out.push(cur); cur = ''; }
+      else if (c === sep) { out.push(cur); cur = ''; }
       else cur += c;
     }
     out.push(cur);

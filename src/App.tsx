@@ -5,13 +5,14 @@ import Panel from './Panel';
 import Ficha from './Ficha';
 import Leyenda from './Leyenda';
 import PlanoGeneral from './PlanoGeneral';
+import Tablero from './Tablero';
 
 // three.js solo se descarga cuando alguien abre la vista 3D.
 const Vista3D = lazy(() => import('./Vista3D'));
 // La conversión de IFC solo se descarga al pulsar «Subir IFC».
 const SubirIfc = lazy(() => import('./SubirIfc'));
 
-type Vista = 'plano' | '3d';
+type Vista = 'plano' | '3d' | 'tablero';
 
 /** Pedido de encuadre: el número cambia en cada pedido para que la vista lo atienda aunque la caja se repita. */
 export interface Encuadre {
@@ -100,6 +101,9 @@ export default function App() {
     encuadrar(unirCajas(mods.map((m) => m.bbox_utm)));
   };
 
+  const enfocarRef = useRef(enfocar);
+  enfocarRef.current = enfocar;
+
   const cambiarVista = (v: Vista) => {
     if (v === vista) return;
     encuadrar(ultimoEncuadre.current ?? cajaTotal);
@@ -107,6 +111,12 @@ export default function App() {
   };
 
   const reportarEncuadre = useCallback((c: Caja) => { ultimoEncuadre.current = c; }, []);
+
+  /** Desde el dashboard: abre la planta o el 3D enfocado en un componente. */
+  const verComponente = useCallback((componente: string, v: 'plano' | '3d') => {
+    setVista(v);
+    enfocarRef.current({ campo: 'componente', valor: componente });
+  }, []);
 
   const agregarCapa = useCallback((c: CapaFija) => {
     setDatos((d) => d && { ...d, capas: [...d.capas.filter((x) => x.archivo !== c.archivo), c] });
@@ -136,7 +146,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="barra">
-        <button className="btn-icono solo-movil" onClick={() => setPanelAbierto((x) => !x)} aria-label="Mostrar paquetes">☰</button>
+        {vista !== 'tablero' && <button className="btn-icono solo-movil" onClick={() => setPanelAbierto((x) => !x)} aria-label="Mostrar paquetes">☰</button>}
         <div className="titulo">
           <span className="titulo-sup">Drenaje pluvial integral</span>
           <span className="titulo-main">{datos.manifest.proyecto}</span>
@@ -144,7 +154,9 @@ export default function App() {
         <div className="segmentado" role="tablist" aria-label="Vista">
           <button role="tab" aria-selected={vista === 'plano'} onClick={() => cambiarVista('plano')}>Plano general</button>
           <button role="tab" aria-selected={vista === '3d'} onClick={() => cambiarVista('3d')}>Vista 3D</button>
+          <button role="tab" aria-selected={vista === 'tablero'} onClick={() => cambiarVista('tablero')}>Dashboard</button>
         </div>
+        {vista !== 'tablero' && <>
         <label className="selector">
           <span>Color</span>
           <select value={modoColor} onChange={(e) => setModoColor(e.target.value as ModoColor)}>
@@ -155,41 +167,48 @@ export default function App() {
           </select>
         </label>
         <button className="btn" onClick={verTodo}>Ver todo</button>
+        </>}
         <button className="btn btn-subir" onClick={() => setSubiendo(true)}>Subir IFC</button>
       </header>
 
-      <div className="cuerpo">
-        <Panel
-          abierto={panelAbierto}
-          cerrar={() => setPanelAbierto(false)}
-          datos={datos}
-          sectores={sectores}
-          paquetes={paquetes}
-          ocultos={ocultos}
-          foco={foco}
-          setOcultos={setOcultos}
-          enfocar={enfocar}
-          quitarFoco={() => setFoco(null)}
-        />
-        <main className="lienzo">
-          {vista === 'plano' ? (
-            <PlanoGeneral {...estado} />
-          ) : (
-            <Suspense fallback={<div className="cargando">Preparando la vista 3D…</div>}>
-              <Vista3D {...estado} />
-            </Suspense>
-          )}
-          <Leyenda modo={modoColor} datos={datos} sectores={sectores} paquetes={paquetes} />
-          {seleccion && (
-            <Ficha
-              estructura={seleccion}
-              datos={datos}
-              cerrar={() => setSeleccion(null)}
-              enfocar={() => enfocar({ campo: 'componente', valor: seleccion.componente })}
-            />
-          )}
-        </main>
-      </div>
+      {vista === 'tablero' ? (
+        <div className="cuerpo">
+          <Tablero datos={datos} sectores={sectores} verComponente={verComponente} />
+        </div>
+      ) : (
+        <div className="cuerpo">
+          <Panel
+            abierto={panelAbierto}
+            cerrar={() => setPanelAbierto(false)}
+            datos={datos}
+            sectores={sectores}
+            paquetes={paquetes}
+            ocultos={ocultos}
+            foco={foco}
+            setOcultos={setOcultos}
+            enfocar={enfocar}
+            quitarFoco={() => setFoco(null)}
+          />
+          <main className="lienzo">
+            {vista === 'plano' ? (
+              <PlanoGeneral {...estado} />
+            ) : (
+              <Suspense fallback={<div className="cargando">Preparando la vista 3D…</div>}>
+                <Vista3D {...estado} />
+              </Suspense>
+            )}
+            <Leyenda modo={modoColor} datos={datos} sectores={sectores} paquetes={paquetes} />
+            {seleccion && (
+              <Ficha
+                estructura={seleccion}
+                datos={datos}
+                cerrar={() => setSeleccion(null)}
+                enfocar={() => enfocar({ campo: 'componente', valor: seleccion.componente })}
+              />
+            )}
+          </main>
+        </div>
+      )}
       {subiendo && (
         <Suspense fallback={null}>
           <SubirIfc datos={datos} verAqui={verAqui} cerrar={() => setSubiendo(false)} />
