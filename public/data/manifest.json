@@ -546,6 +546,34 @@
         471776.2947477284,
         9491821.314481689
       ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000222",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000222",
+      "sector": "Sector 3",
+      "paquete": "Paquete 33",
+      "componente": "Componente 323",
+      "componente_desc": "Canal Negritos",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000222.glb",
+      "estructuras": 2,
+      "tipos": {
+        "Otros": 1,
+        "Sumidero": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        },
+        "Sumidero": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        470796.2571023125,
+        9492170.810128761,
+        470801.9758153261,
+        9492176.609466443
+      ]
     }
   ]
 }
