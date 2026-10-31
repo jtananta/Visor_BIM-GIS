@@ -94,8 +94,23 @@ export default function Panel(p: Props) {
     if (si) n.add(k); else n.delete(k);
     return n;
   });
-  const agrupar = () => setAbiertos(new Set());
-  const desagrupar = () => setAbiertos(new Set(modelos.flatMap((m) => [`s:${m.sector}`, `p:${m.paquete}`, `c:${m.componente}`])));
+  /** Nivel del árbol, como los niveles de esquema de Excel: abre todo hasta ese nivel y cierra lo de abajo. */
+  const NIVELES = ['Sector', 'Paquete', 'Componente', 'IFC'] as const;
+  const verHasta = (nivel: number) => {
+    const k: string[] = [];
+    for (const [s, ps] of arbol) {
+      if (nivel >= 1) k.push(`s:${s}`);
+      for (const [paq, filas] of ps) {
+        if (nivel >= 2) k.push(`p:${paq}`);
+        if (nivel >= 3) for (const f of filas) k.push(`c:${f.comp.componente}`);
+      }
+    }
+    setAbiertos(new Set(k));
+  };
+  const nivelActual = (() => {
+    const tiene = (pre: string) => [...abiertos].some((k) => k.startsWith(pre));
+    return tiene('c:') ? 3 : tiene('p:') ? 2 : tiene('s:') ? 1 : 0;
+  })();
 
   return (
     <aside className={`panel ${p.abierto ? 'abierto' : ''}`} aria-label="Paquetes del proyecto">
@@ -107,8 +122,12 @@ export default function Panel(p: Props) {
         <button className="btn-icono solo-movil" onClick={p.cerrar} aria-label="Cerrar panel">✕</button>
       </div>
       <div className="panel-herramientas">
-        <button className="btn chico" onClick={agrupar} title="Contraer sectores, paquetes e IFC">⊟ Agrupar</button>
-        <button className="btn chico" onClick={desagrupar} title="Abrir todo lo que tiene modelo, con cada IFC">⊞ Desagrupar</button>
+        <span className="sutil">Ver hasta</span>
+        <div className="segmento niveles" role="group" aria-label="Agrupar el árbol hasta el nivel">
+          {NIVELES.map((n, i) => (
+            <button key={n} aria-pressed={nivelActual === i} onClick={() => verHasta(i)} title={`Agrupar hasta ${n.toLowerCase()}`}>{n}</button>
+          ))}
+        </div>
         <label className="check"><input type="checkbox" checked={soloConModelo} onChange={(e) => setSoloConModelo(e.target.checked)} /> Solo con modelo</label>
       </div>
 
@@ -132,7 +151,7 @@ export default function Panel(p: Props) {
                 <button className="sector-nombre" disabled={!modsSector.length}
                   onClick={(e) => { e.preventDefault(); p.enfocar({ campo: 'sector', valor: s }); }}
                   title={modsSector.length ? 'Enfocar este sector' : 'Sin modelos todavía'}>{s}</button>
-                <span className="sutil">{[...ps.values()].reduce((n, fs) => n + fs.length, 0)} comp.</span>
+                <span className="resumen-nodo">{ps.size} paq · {[...ps.values()].reduce((n, fs) => n + fs.length, 0)} comp{modsSector.length ? ` · ${modsSector.length} IFC` : ''}</span>
               </summary>
               {[...ps.keys()].sort(compararNatural).map((paq) => {
                 const filas = ps.get(paq)!;
@@ -145,7 +164,7 @@ export default function Panel(p: Props) {
                       {ojoGrupo(modsPaq, paq)}
                       <button className="paquete-nombre" disabled={!modsPaq.length}
                         onClick={(e) => { e.preventDefault(); p.enfocar({ campo: 'paquete', valor: paq }); }}>{paq}</button>
-                      <span className="sutil">{filas.filter((f) => f.modelos.length).length}/{filas.length}</span>
+                      <span className="resumen-nodo">{filas.length} comp{modsPaq.length ? ` · ${modsPaq.length} IFC` : ''}</span>
                     </summary>
                     <ul>
                       {filas.map(({ comp, modelos: mods }) => {

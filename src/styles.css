@@ -349,3 +349,5 @@ li.sin-modelo { opacity: 0.75; }
 .panel-herramientas .check { font-size: 12px; }
 .btn-ifc { border: 1px solid var(--borde); background: var(--fondo); color: var(--sutil); border-radius: 999px; font-size: 11px; font-weight: 600; padding: 1px 8px; white-space: nowrap; flex-shrink: 0; }
 .btn-ifc:hover, .btn-ifc[aria-expanded="true"] { color: var(--azul); border-color: var(--azul); }
+.resumen-nodo { font-size: 11px; color: var(--sutil); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.segmento.niveles button { padding: 3px 8px; font-size: 11px; }
