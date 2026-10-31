@@ -148,35 +148,6 @@
       ]
     },
     {
-      "codigo": "500125-CSSP001-000-XX-MD-BM-000024",
-      "modelo": "500125-CSSP001-000-XX-MD-BM-000024",
-      "sector": "Sector 1",
-      "paquete": "Paquete 7",
-      "componente": "Componente 11.1",
-      "componente_desc": "DRENAJE URBANO FAP",
-      "glb": "models/500125-CSSP001-000-XX-MD-BM-000024.glb",
-      "estructuras": 48,
-      "tipos": {
-        "Canal": 3,
-        "Otros": 45
-      },
-      "metrados": {
-        "Canal": {
-          "n": 3,
-          "ml": 48.43
-        },
-        "Otros": {
-          "n": 45
-        }
-      },
-      "bbox_utm": [
-        471301.5558556454,
-        9493450.42236581,
-        471688.37461884134,
-        9493821.613525718
-      ]
-    },
-    {
       "codigo": "500125-CSSP001-560-XX-MD-ST-000092",
       "modelo": "Dique Mangle",
       "paquete": "Paquete 9",
