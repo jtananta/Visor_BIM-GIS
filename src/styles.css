@@ -247,7 +247,7 @@ li.sin-modelo { opacity: 0.75; }
 /* Dashboard */
 .tablero { flex: 1; overflow-y: auto; padding: 16px max(16px, env(safe-area-inset-right, 0px)) 32px max(16px, env(safe-area-inset-left, 0px));
   display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); align-content: start;
-  grid-template-areas: 'kpis kpis' 'sector mapa' 'paquete mapa' 'tabla tabla'; }
+  grid-template-areas: 'kpis kpis' 'metr metr' 'sector mapa' 'paquete mapa' 'paqtab paqtab' 'tabla tabla'; }
 .kpis { grid-area: kpis; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 .kpi, .tarjeta-t { background: var(--panel); border: 1px solid var(--borde); border-radius: 12px; padding: 14px 16px; min-width: 0; }
 .kpi { display: flex; flex-direction: column; gap: 2px; }
@@ -263,6 +263,15 @@ li.sin-modelo { opacity: 0.75; }
 .estado-paquete { grid-area: paquete; }
 .mapa-resumen { grid-area: mapa; }
 .tabla-componentes { grid-area: tabla; }
+.metrados-kpi { grid-area: metr; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.metrados-kpi .kpi-valor { font-size: 26px; }
+.metrados-kpi .kpi-titulo { display: inline-flex; align-items: center; gap: 6px; }
+.nota-metrados { grid-column: 1 / -1; margin: -4px 2px 0; font-size: 12px; }
+.tabla-paquetes { grid-area: paqtab; }
+.tabla .unidad { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.tabla tr.grupo td { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--sutil); background: color-mix(in srgb, var(--borde) 30%, transparent); padding: 5px 8px; }
+.tabla tr.total td { font-weight: 700; border-top: 2px solid var(--borde); border-bottom: none; }
+.tabla td.cero { color: var(--sutil); }
 .mapa-chico { flex: 1; min-height: 380px; border-radius: 8px; overflow: hidden; border: 1px solid var(--borde); }
 .barras { display: flex; flex-direction: column; gap: 6px; }
 .barra-fila { display: grid; grid-template-columns: 88px minmax(0, 1fr) 76px; align-items: center; gap: 10px; font-size: 13px; }
@@ -287,7 +296,7 @@ li.sin-modelo { opacity: 0.75; }
 .acciones-fila { white-space: nowrap; text-align: right; }
 .acciones-fila .btn + .btn { margin-left: 6px; }
 @media (max-width: 900px) {
-  .tablero { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'kpis' 'sector' 'mapa' 'paquete' 'tabla'; }
-  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tablero { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'kpis' 'metr' 'sector' 'mapa' 'paquete' 'paqtab' 'tabla'; }
+  .kpis, .metrados-kpi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mapa-chico { min-height: 300px; }
 }

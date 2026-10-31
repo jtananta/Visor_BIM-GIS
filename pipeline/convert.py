@@ -299,6 +299,36 @@ def ubicar(cat, componentes):
 # Proceso principal
 # ---------------------------------------------------------------------------
 
+def largo_principal(v):
+    """Largo de la nube de puntos a lo largo de su eje principal (sirve para tubos inclinados o en diagonal)."""
+    if len(v) < 2:
+        return 0.0
+    c = v - v.mean(0)
+    eje = np.linalg.svd(c[:: max(1, len(c) // 2000)], full_matrices=False)[2][0]
+    t = c @ eje
+    return float(t.max() - t.min())
+
+
+def metros_lineales(tipo, g):
+    """Suma de tramos rectos en tuberías (sin codos ni accesorios); largo del tramo en canales, box y gaviones."""
+    regla = REGLA_POR_TIPO.get(tipo, {}).get("agrupar")
+    if regla == "sistema":
+        return sum(largo_principal(it["v"]) for it in g if it["segmento"])
+    if regla == "tramo":
+        return largo_principal(np.vstack([it["v"][:, :2] for it in g]))
+    return None
+
+
+def es_segmento(el):
+    if el.is_a("IfcFlowFitting"):
+        return False
+    if el.is_a("IfcFlowSegment") or el.is_a() == "IfcPipeSegment":
+        return True
+    tipo = ue.get_type(el)
+    texto = f"{tipo.Name if tipo else ''}|{el.Name or ''}"
+    return bool(re.search(r"tuber[ií]a|REC_TUB", texto, re.I)) and not re.search(r"codo|accesorio|fitting", tipo.Name if tipo and tipo.Name else "", re.I)
+
+
 def convertir(ruta, salida, catalogo, componentes, a_wgs84):
     ifc = ifcopenshell.open(str(ruta))
     codigo = ruta.stem
@@ -332,9 +362,11 @@ def convertir(ruta, salida, catalogo, componentes, a_wgs84):
         por_tipo[tipo_de[el.id()]].append({
             "v": v, "f": f, "min": v.min(0), "max": v.max(0), "centro": v.mean(0),
             "sistema": sistemas.get(el.id()),
+            "segmento": es_segmento(el),
         })
 
     estructuras, features = [], []
+    metrados = {}
     for tipo in sorted(por_tipo):
         grupos = agrupar(tipo, por_tipo[tipo])
         # Numeración estable: de norte a sur, luego de oeste a este.
@@ -359,6 +391,12 @@ def convertir(ruta, salida, catalogo, componentes, a_wgs84):
                 "tipo_estructura": tipo,
                 "sector": cat["sector"],
             }
+            ml = metros_lineales(tipo, g)
+            m = metrados.setdefault(tipo, {"n": 0})
+            m["n"] += 1
+            if ml is not None:
+                meta["longitud_m"] = round(ml, 2)
+                m["ml"] = round(m.get("ml", 0) + ml, 2)
             estructuras.append({"pos": a_local(v), "idx": f, "meta": meta})
             # Huella 2D para el plano general: unión de la silueta de cada elemento,
             # así un tramo de tubería en L no se dibuja como un triángulo.
@@ -386,6 +424,7 @@ def convertir(ruta, salida, catalogo, componentes, a_wgs84):
         "glb": f"models/{codigo}.glb",
         "estructuras": len(estructuras),
         "tipos": {t: sum(1 for e in estructuras if e["meta"]["tipo_estructura"] == t) for t in tipos_usados},
+        "metrados": metrados,
         "bbox_utm": [float(bmin[0] + o["e"]), float(-bmax[2] + o["n"]), float(bmax[0] + o["e"]), float(-bmin[2] + o["n"])],
     }
     reporte = {

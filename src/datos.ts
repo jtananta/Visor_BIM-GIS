@@ -11,6 +11,7 @@ export interface Estructura {
   modelo_codigo: string;
   tipo_estructura: string;
   sector: string;
+  longitud_m?: number;
 }
 
 export interface Modelo {
@@ -23,6 +24,8 @@ export interface Modelo {
   glb: string;
   estructuras: number;
   tipos: Record<string, number>;
+  /** Cantidad de estructuras y metros lineales por tipo (los modelos convertidos antes de esto no lo traen). */
+  metrados?: Record<string, { n: number; ml?: number }>;
   /** [minE, minN, maxE, maxN] en el CRS del proyecto. */
   bbox_utm: [number, number, number, number];
 }
@@ -204,6 +207,7 @@ export const COLOR_TIPO: Record<string, string> = {
   Buzón: '#2F6FB5',
   Sumidero: '#1A9A8B',
   Tubería: '#D98A26',
+  Box: '#7B5CB8',
   Gaviones: '#8C7F66',
   Canal: '#8E979F',
   Otros: '#A3A3A3',

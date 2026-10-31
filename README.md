@@ -13,12 +13,14 @@ Hay dos formas de cambiar esos datos: desde la página de administración (lo no
 
 ## Dashboard
 
-Tercera pestaña del visor, junto a Plano general y Vista 3D. Muestra:
-- **Indicadores**: componentes, componentes con modelo publicado, avance promedio y fecha de la última publicación.
-- **Avance por sector**: el promedio del % de avance de sus componentes.
-- **Mapa por estado**: cada estructura con el color del estado de su componente.
-- **Estado por paquete**: los componentes de cada paquete por estado, con cuántos tienen modelo.
-- **Tabla de componentes**: filtrable por sector, estado y «solo con modelo», con botones para abrir cada uno en la planta o en 3D.
+Tercera pestaña del visor, junto a Plano general y Vista 3D. Muestra cantidades (metrados) del proyecto:
+- **Estructura**: sectores, paquetes, componentes y modelos BIM publicados.
+- **Metrados modelados**: buzones y sumideros (und); tubería, box, canal y gaviones (ml).
+- **Paquetes por sector** y **componentes por paquete** (con y sin modelo).
+- **Mapa por tipo de estructura**.
+- **Metrados por paquete** y **por componente**, con botones para abrir cada uno en la planta o en 3D.
+
+Los metrados se miden al convertir el IFC: tubería = suma del largo de los segmentos rectos (sin codos ni accesorios); canal, box y gaviones = largo del tramo a lo largo de su eje. Box se reconoce por el nombre del elemento (Box, Cajón, Alcantarilla; ver `reglas.json`). Los modelos convertidos antes de esta versión se estiman con su trazado en planta hasta que se vuelva a subir su IFC.
 
 Todo sale del Excel de control (`componentes.csv`) y de los modelos publicados (`manifest.json`), así que se actualiza solo al publicar.
 

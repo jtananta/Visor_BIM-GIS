@@ -58,6 +58,7 @@ const COLORES: Record<string, [number, number, number]> = {
   'Buzón': [0.2, 0.45, 0.75],
   Sumidero: [0.1, 0.6, 0.55],
   'Tubería': [0.85, 0.55, 0.15],
+  Box: [0.5, 0.36, 0.7],
   Gaviones: [0.55, 0.5, 0.4],
   Canal: [0.62, 0.64, 0.66],
   Otros: [0.7, 0.7, 0.7],
@@ -70,6 +71,50 @@ interface Item {
   max: [number, number, number];
   centro: [number, number, number];
   sistema: string | null;
+  /** Tramo recto de tubería (IfcFlowSegment), el único que suma metros lineales; codos y accesorios no. */
+  segmento: boolean;
+}
+
+/**
+ * Largo de una nube de puntos a lo largo de su eje principal (análisis de componentes principales por
+ * iteración de potencias). Sirve para un tubo inclinado o en diagonal, donde la caja alineada a los ejes falla.
+ */
+export function largoPrincipal(v: Float64Array, dims: 2 | 3): number {
+  const paso = Math.max(1, Math.floor(v.length / 3 / 2000)) * 3;
+  const m = [0, 0, 0];
+  let n = 0;
+  for (let k = 0; k < v.length; k += paso) { for (let c = 0; c < dims; c++) m[c] += v[k + c]; n++; }
+  for (let c = 0; c < dims; c++) m[c] /= n;
+  const C = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (let k = 0; k < v.length; k += paso) {
+    for (let a = 0; a < dims; a++) for (let b = 0; b < dims; b++) C[a][b] += (v[k + a] - m[a]) * (v[k + b] - m[b]);
+  }
+  let e = [1, 0.7, 0.3].slice(0, dims);
+  for (let it = 0; it < 30; it++) {
+    const r = e.map((_, a) => e.reduce((s, x, b) => s + C[a][b] * x, 0));
+    const norma = Math.hypot(...r) || 1;
+    e = r.map((x) => x / norma);
+  }
+  let lo = Infinity, hi = -Infinity;
+  for (let k = 0; k < v.length; k += 3) {
+    let t = 0;
+    for (let c = 0; c < dims; c++) t += (v[k + c] - m[c]) * e[c];
+    if (t < lo) lo = t;
+    if (t > hi) hi = t;
+  }
+  return Number.isFinite(hi - lo) ? hi - lo : 0;
+}
+
+/** Metros lineales de una estructura: suma de tramos rectos en tuberías; largo del tramo en canales, box y gaviones. */
+function metrosLineales(regla: Regla | undefined, g: Item[]): number | undefined {
+  if (regla?.agrupar === 'sistema') return g.filter((it) => it.segmento).reduce((s, it) => s + largoPrincipal(it.v, 3), 0);
+  if (regla?.agrupar === 'tramo') {
+    const todos = new Float64Array(g.reduce((s, it) => s + it.v.length, 0));
+    let k = 0;
+    for (const it of g) { todos.set(it.v, k); k += it.v.length; }
+    return largoPrincipal(todos, 2);
+  }
+  return undefined;
 }
 
 /* ------------------------------------------------------------------ */
@@ -265,7 +310,11 @@ export async function convertirIfc(
       const n = v.length / 3;
       centro[0] /= n; centro[1] /= n; centro[2] /= n;
       if (!porTipo.has(tipo)) porTipo.set(tipo, []);
-      porTipo.get(tipo)!.push({ v, f: Uint32Array.from(fs), min, max, centro, sistema: sistemaDe.get(mesh.expressID) ?? null });
+      const clase = api.GetNameFromTypeCode(api.GetLineType(id, mesh.expressID)).toUpperCase();
+      porTipo.get(tipo)!.push({ v, f: Uint32Array.from(fs), min, max, centro, sistema: sistemaDe.get(mesh.expressID) ?? null,
+        segmento: clase === 'IFCFLOWSEGMENT' || clase === 'IFCPIPESEGMENT'
+          || (clase !== 'IFCFLOWFITTING' && /tuber[ií]a|REC_TUB/i.test(`${tipoDe.get(mesh.expressID) ?? ''}|${valor(api.GetLine(id, mesh.expressID)?.Name)}`)
+            && !/codo|accesorio|fitting/i.test(`${tipoDe.get(mesh.expressID) ?? ''}`)) });
     });
 
     avisar('Agrupando estructuras…', 0.72);
@@ -277,6 +326,7 @@ export async function convertirIfc(
     const materiales = new Map<string, ReturnType<Document['createMaterial']>>();
     const features: GeoJSON.Feature[] = [];
     const cuenta: Record<string, number> = {};
+    const metrados: Record<string, { n: number; ml?: number }> = {};
     let elementos = 0;
     const bmin = [Infinity, Infinity], bmax = [-Infinity, -Infinity];
 
@@ -317,6 +367,10 @@ export async function convertirIfc(
           if (h.length >= 3) partes.push([[...h, h[0]]]);
         }
         const tramo = regla?.agrupar === 'tramo';
+        const ml = metrosLineales(regla, g);
+        metrados[tipo] ??= { n: 0 };
+        metrados[tipo].n++;
+        if (ml !== undefined) metrados[tipo].ml = Math.round(((metrados[tipo].ml ?? 0) + ml) * 100) / 100;
         const meta = {
           codigo: `${codigo}#${tipo.slice(0, 3).toUpperCase()}${String(n).padStart(3, '0')}`,
           nombre: tramo ? `${tipo} · tramo ${String(n).padStart(2, '0')}` : `${tipo} ${String(n).padStart(2, '0')}`,
@@ -327,6 +381,7 @@ export async function convertirIfc(
           modelo_codigo: codigo,
           tipo_estructura: tipo,
           sector: ub.sector,
+          ...(ml !== undefined ? { longitud_m: Math.round(ml * 100) / 100 } : {}),
         };
         const prim = doc.createPrimitive()
           .setAttribute('POSITION', doc.createAccessor().setType('VEC3').setArray(pos).setBuffer(buffer))
@@ -366,6 +421,7 @@ export async function convertirIfc(
       glb: `models/${codigo}.glb`,
       estructuras,
       tipos: cuenta,
+      metrados,
       bbox_utm: [bmin[0], bmin[1], bmax[0], bmax[1]],
     };
     avisar('Listo', 1);

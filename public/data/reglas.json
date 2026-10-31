@@ -5,6 +5,7 @@
     { "tipo": "Buzón",          "patron": "BUZON|Losa (Superior|Inferior) (Circular|Rectangular)|Muro (Circular|Rectangular)|\\|ESPECIAL", "agrupar": "contacto", "tolerancia": 0.5 },
     { "tipo": "Sumidero",       "patron": "Sumidero|Rejilla|RegistroRejilla",          "agrupar": "contacto", "tolerancia": 0.5 },
     { "tipo": "Tubería",        "patron": "IfcFlowSegment|IfcFlowFitting|Tuberia|Tubería|Codo|REC_TUB", "agrupar": "sistema", "tolerancia": 0.05 },
+    { "tipo": "Box",            "patron": "Box|BOX|Cajon|Cajón|CAJON|Alcantarilla|ALCANTARILLA", "agrupar": "tramo", "tramo": 100 },
     { "tipo": "Gaviones",       "patron": "Gavion|Gavión",                              "agrupar": "tramo", "tramo": 100 },
     { "tipo": "Canal",          "patron": "MuroCanal|SueloConcreto|MuroConcreto|JUNTA", "agrupar": "tramo", "tramo": 100 }
   ],
