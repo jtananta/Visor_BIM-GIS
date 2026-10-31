@@ -11,6 +11,143 @@
   "ejes": "glTF x=Este, y=Elevación, z=-Norte (metros, relativo al origen)",
   "modelos": [
     {
+      "codigo": "500125-CSSP001-000-XX-MD-BM-000020",
+      "modelo": "500125-CSSP001-000-XX-MD-BM-000020",
+      "sector": "Sector 1",
+      "paquete": "Paquete 7",
+      "componente": "Componente 11.1",
+      "componente_desc": "DRENAJE URBANO FAP",
+      "glb": "models/500125-CSSP001-000-XX-MD-BM-000020.glb",
+      "estructuras": 125,
+      "tipos": {
+        "Canal": 3,
+        "Otros": 122
+      },
+      "metrados": {
+        "Canal": {
+          "n": 3,
+          "ml": 59.33
+        },
+        "Otros": {
+          "n": 122
+        }
+      },
+      "bbox_utm": [
+        471304.6650045052,
+        9493460.694203204,
+        471696.1272963346,
+        9493869.698042044
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-000-XX-MD-BM-000021",
+      "modelo": "500125-CSSP001-000-XX-MD-BM-000021",
+      "sector": "Sector 1",
+      "paquete": "Paquete 7",
+      "componente": "Componente 11.1",
+      "componente_desc": "DRENAJE URBANO FAP",
+      "glb": "models/500125-CSSP001-000-XX-MD-BM-000021.glb",
+      "estructuras": 56,
+      "tipos": {
+        "Canal": 3,
+        "Otros": 29,
+        "Sumidero": 24
+      },
+      "metrados": {
+        "Canal": {
+          "n": 3,
+          "ml": 143.49
+        },
+        "Otros": {
+          "n": 29
+        },
+        "Sumidero": {
+          "n": 24
+        }
+      },
+      "bbox_utm": [
+        471307.84541841096,
+        9493451.015851108,
+        471687.78493599175,
+        9493796.586929968
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-000-XX-MD-BM-000022",
+      "modelo": "500125-CSSP001-000-XX-MD-BM-000022",
+      "sector": "Sector 1",
+      "paquete": "Paquete 7",
+      "componente": "Componente 11.1",
+      "componente_desc": "DRENAJE URBANO FAP",
+      "glb": "models/500125-CSSP001-000-XX-MD-BM-000022.glb",
+      "estructuras": 108,
+      "tipos": {
+        "Buzón": 26,
+        "Otros": 27,
+        "Tubería": 55
+      },
+      "metrados": {
+        "Buzón": {
+          "n": 26
+        },
+        "Otros": {
+          "n": 27
+        },
+        "Tubería": {
+          "n": 55,
+          "ml": 1310.31
+        }
+      },
+      "bbox_utm": [
+        471310.8136759426,
+        9493452.867328929,
+        471686.2864010332,
+        9493825.022560854
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-000-XX-MD-BM-000023",
+      "modelo": "500125-CSSP001-000-XX-MD-BM-000023",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 301",
+      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
+      "glb": "models/500125-CSSP001-000-XX-MD-BM-000023.glb",
+      "estructuras": 9,
+      "tipos": {
+        "Buzón": 2,
+        "Canal": 2,
+        "Gaviones": 1,
+        "Otros": 3,
+        "Sumidero": 1
+      },
+      "metrados": {
+        "Buzón": {
+          "n": 2
+        },
+        "Canal": {
+          "n": 2,
+          "ml": 121.53
+        },
+        "Gaviones": {
+          "n": 1,
+          "ml": 12.06
+        },
+        "Otros": {
+          "n": 3
+        },
+        "Sumidero": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        471376.3606755398,
+        9493806.08970028,
+        471467.5570930522,
+        9493882.546780543
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-000-XX-MD-BM-000024",
       "modelo": "500125-CSSP001-000-XX-MD-BM-000024",
       "sector": "Sector 1",
