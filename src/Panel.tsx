@@ -96,21 +96,37 @@ export default function Panel(p: Props) {
   });
   /** Nivel del árbol, como los niveles de esquema de Excel: abre todo hasta ese nivel y cierra lo de abajo. */
   const NIVELES = ['Sector', 'Paquete', 'Componente', 'IFC'] as const;
-  const verHasta = (nivel: number) => {
-    const k: string[] = [];
+  const clavesNivel = (nivel: number) => {
+    const k = new Set<string>();
     for (const [s, ps] of arbol) {
-      if (nivel >= 1) k.push(`s:${s}`);
+      if (nivel >= 1) k.add(`s:${s}`);
       for (const [paq, filas] of ps) {
-        if (nivel >= 2) k.push(`p:${paq}`);
-        if (nivel >= 3) for (const f of filas) k.push(`c:${f.comp.componente}`);
+        if (nivel >= 2) k.add(`p:${paq}`);
+        if (nivel >= 3) for (const f of filas) if (f.modelos.length > 1) k.add(`c:${f.comp.componente}`);
       }
     }
-    setAbiertos(new Set(k));
+    return k;
   };
-  const nivelActual = (() => {
-    const tiene = (pre: string) => [...abiertos].some((k) => k.startsWith(pre));
-    return tiene('c:') ? 3 : tiene('p:') ? 2 : tiene('s:') ? 1 : 0;
-  })();
+  const verHasta = (nivel: number) => setAbiertos(clavesNivel(nivel));
+  /** Botones ⊞/⊟ de cada sector o paquete: abren o cierran toda su rama, sin tocar las demás. */
+  const rama = (claves: string[], abrirla: boolean) => setAbiertos((prev) => {
+    const n = new Set(prev);
+    claves.forEach((k) => (abrirla ? n.add(k) : n.delete(k)));
+    return n;
+  });
+  const clavesSector = (s: string) => {
+    const ps = arbol.get(s)!;
+    return [`s:${s}`, ...[...ps.keys()].map((p) => `p:${p}`), ...[...ps.values()].flat().map((f) => `c:${f.comp.componente}`)];
+  };
+  const clavesPaquete = (s: string, paq: string) => [`p:${paq}`, ...arbol.get(s)!.get(paq)!.map((f) => `c:${f.comp.componente}`)];
+  const botonesRama = (claves: string[], nombre: string) => (
+    <span className="botones-rama">
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); rama(claves, true); }} title={`Desagrupar ${nombre}`} aria-label={`Desagrupar ${nombre}`}>+</button>
+      <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); rama(claves, false); }} title={`Agrupar ${nombre}`} aria-label={`Agrupar ${nombre}`}>−</button>
+    </span>
+  );
+  // El nivel se marca solo si el árbol está exactamente así; tras abrir o cerrar una rama suelta, ninguno.
+  const nivelActual = [0, 1, 2, 3].find((n) => { const k = clavesNivel(n); return k.size === abiertos.size && [...k].every((x) => abiertos.has(x)); }) ?? -1;
 
   return (
     <aside className={`panel ${p.abierto ? 'abierto' : ''}`} aria-label="Paquetes del proyecto">
@@ -152,6 +168,7 @@ export default function Panel(p: Props) {
                   onClick={(e) => { e.preventDefault(); p.enfocar({ campo: 'sector', valor: s }); }}
                   title={modsSector.length ? 'Enfocar este sector' : 'Sin modelos todavía'}>{s}</button>
                 <span className="resumen-nodo">{ps.size} paq · {[...ps.values()].reduce((n, fs) => n + fs.length, 0)} comp{modsSector.length ? ` · ${modsSector.length} IFC` : ''}</span>
+                {botonesRama(clavesSector(s), s)}
               </summary>
               {[...ps.keys()].sort(compararNatural).map((paq) => {
                 const filas = ps.get(paq)!;
@@ -165,6 +182,7 @@ export default function Panel(p: Props) {
                       <button className="paquete-nombre" disabled={!modsPaq.length}
                         onClick={(e) => { e.preventDefault(); p.enfocar({ campo: 'paquete', valor: paq }); }}>{paq}</button>
                       <span className="resumen-nodo">{filas.length} comp{modsPaq.length ? ` · ${modsPaq.length} IFC` : ''}</span>
+                      {botonesRama(clavesPaquete(s, paq), paq)}
                     </summary>
                     <ul>
                       {filas.map(({ comp, modelos: mods }) => {
