@@ -11,35 +11,6 @@
   "ejes": "glTF x=Este, y=Elevación, z=-Norte (metros, relativo al origen)",
   "modelos": [
     {
-      "codigo": "500125-CSSP001-000-XX-MD-BM-000020",
-      "modelo": "500125-CSSP001-000-XX-MD-BM-000020",
-      "sector": "Sector 1",
-      "paquete": "Paquete 7",
-      "componente": "Componente 11.1",
-      "componente_desc": "DRENAJE URBANO FAP",
-      "glb": "models/500125-CSSP001-000-XX-MD-BM-000020.glb",
-      "estructuras": 125,
-      "tipos": {
-        "Canal": 3,
-        "Otros": 122
-      },
-      "metrados": {
-        "Canal": {
-          "n": 3,
-          "ml": 59.33
-        },
-        "Otros": {
-          "n": 122
-        }
-      },
-      "bbox_utm": [
-        471304.6650045052,
-        9493460.694203204,
-        471696.1272963346,
-        9493869.698042044
-      ]
-    },
-    {
       "codigo": "500125-CSSP001-000-XX-MD-BM-000021",
       "modelo": "500125-CSSP001-000-XX-MD-BM-000021",
       "sector": "Sector 1",
