@@ -165,6 +165,40 @@
       }
     },
     {
+      "codigo": "500125-CSSP001-740-XX-DR-ST-004120@004145",
+      "modelo": "500125-CSSP001-740-XX-DR-ST-004120@004145",
+      "sector": "Sector 1",
+      "paquete": "Paquete 8",
+      "componente": "Componente 11.2",
+      "componente_desc": "DRENAJE URBANO JESUS MARIA",
+      "glb": "models/500125-CSSP001-740-XX-DR-ST-004120@004145.glb",
+      "estructuras": 24,
+      "tipos": {
+        "Canal": 12,
+        "Gaviones": 4,
+        "Otros": 8
+      },
+      "metrados": {
+        "Canal": {
+          "n": 12,
+          "ml": 431.58
+        },
+        "Gaviones": {
+          "n": 4,
+          "ml": 115.75
+        },
+        "Otros": {
+          "n": 8
+        }
+      },
+      "bbox_utm": [
+        469781.30197194807,
+        9495589.09478407,
+        470126.5217793077,
+        9496851.160143748
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-740-XX-MD-ST-000091",
       "modelo": "Canal Jose Olaya",
       "sector": "Sector 1",
