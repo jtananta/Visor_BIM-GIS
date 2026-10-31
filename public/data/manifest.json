@@ -185,6 +185,143 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-DR-HD-011264@011268",
+      "modelo": "500125-CSSP001-780-XX-DR-HD-011264@011268",
+      "sector": "Sector 1",
+      "paquete": "Paquete 8",
+      "componente": "Componente 11.2",
+      "componente_desc": "DRENAJE URBANO JESUS MARIA",
+      "glb": "models/500125-CSSP001-780-XX-DR-HD-011264@011268.glb",
+      "estructuras": 170,
+      "tipos": {
+        "Buzón": 29,
+        "Canal": 12,
+        "Otros": 64,
+        "Tubería": 65
+      },
+      "metrados": {
+        "Buzón": {
+          "n": 29
+        },
+        "Canal": {
+          "n": 12,
+          "ml": 418.42
+        },
+        "Otros": {
+          "n": 64
+        },
+        "Tubería": {
+          "n": 65,
+          "ml": 1395.9
+        }
+      },
+      "bbox_utm": [
+        469290.99221197993,
+        9495859.373693751,
+        469759.98465416837,
+        9496407.32229317
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-BM-000820",
+      "modelo": "500125-CSSP001-780-XX-MD-BM-000820",
+      "sector": "Sector 1",
+      "paquete": "Paquete 8",
+      "componente": "Componente 11.2",
+      "componente_desc": "DRENAJE URBANO JESUS MARIA",
+      "glb": "models/500125-CSSP001-780-XX-MD-BM-000820.glb",
+      "estructuras": 38,
+      "tipos": {
+        "Sumidero": 37,
+        "Tubería": 1
+      },
+      "metrados": {
+        "Sumidero": {
+          "n": 37
+        },
+        "Tubería": {
+          "n": 1,
+          "ml": 0.59
+        }
+      },
+      "bbox_utm": [
+        469360.7605462057,
+        9495895.473526811,
+        469745.83874852204,
+        9496412.40896437
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-BM-000821",
+      "modelo": "500125-CSSP001-780-XX-MD-BM-000821",
+      "sector": "Sector 1",
+      "paquete": "Paquete 8",
+      "componente": "Componente 11.2",
+      "componente_desc": "DRENAJE URBANO JESUS MARIA",
+      "glb": "models/500125-CSSP001-780-XX-MD-BM-000821.glb",
+      "estructuras": 156,
+      "tipos": {
+        "Buzón": 27,
+        "Canal": 12,
+        "Otros": 52,
+        "Tubería": 65
+      },
+      "metrados": {
+        "Buzón": {
+          "n": 27
+        },
+        "Canal": {
+          "n": 12,
+          "ml": 425.86
+        },
+        "Otros": {
+          "n": 52
+        },
+        "Tubería": {
+          "n": 65,
+          "ml": 1465.8
+        }
+      },
+      "bbox_utm": [
+        469333.5414725389,
+        9495898.008981766,
+        469742.21168160974,
+        9496407.54271157
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-BM-000822",
+      "modelo": "500125-CSSP001-780-XX-MD-BM-000822",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 301",
+      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
+      "glb": "models/500125-CSSP001-780-XX-MD-BM-000822.glb",
+      "estructuras": 3,
+      "tipos": {
+        "Buzón": 1,
+        "Otros": 1,
+        "Sumidero": 1
+      },
+      "metrados": {
+        "Buzón": {
+          "n": 1
+        },
+        "Otros": {
+          "n": 1
+        },
+        "Sumidero": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469279.6585369238,
+        9495835.812320204,
+        469335.77174422983,
+        9495917.050000032
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000091",
       "modelo": "Sumideros",
       "paquete": "Paquete 9",
