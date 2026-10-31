@@ -330,3 +330,17 @@ li.sin-modelo { opacity: 0.75; }
 .tabla tr.elegido td { background: color-mix(in srgb, var(--azul) 12%, transparent); font-weight: 600; }
 .tabla .col-elegida { background: color-mix(in srgb, var(--azul) 7%, transparent); }
 @media (max-width: 900px) { .segmentadores { position: static; } .segmentadores label { flex: 1 1 40%; } .segmentadores select { min-width: 0; width: 100%; } }
+
+/* IFC dentro de un componente */
+.ifcs-comp { list-style: none; margin: 0 0 4px 30px; padding: 0 0 0 8px; border-left: 2px solid var(--borde); flex-basis: 100%; }
+.ifcs-comp li { display: flex; align-items: center; gap: 4px; padding: 0; }
+.sector li:has(> .ifcs-comp) { flex-wrap: wrap; }
+.ifcs-comp li.oculto .modelo { opacity: .45; }
+.ifcs-comp .modelo { padding: 2px 0; }
+.ifc-nombre { font-size: 12px; font-weight: 600; word-break: break-all; }
+.ifcs-comp .modelo:hover .ifc-nombre { color: var(--azul); }
+.btn-borrar { color: var(--sutil); opacity: .55; }
+.btn-borrar:hover { color: #c62828; opacity: 1; }
+.btn-peligro { background: #c62828; border-color: #c62828; color: #fff; }
+.btn-peligro:hover { background: #a61f1f; color: #fff; border-color: #a61f1f; }
+.btn-peligro:disabled { opacity: .5; }

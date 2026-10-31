@@ -1,11 +1,12 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { cargarDatos, compararNatural, unirCajas, type CapaFija, type Caja, type Datos, type Estructura, type ModoColor } from './datos';
+import { cargarDatos, compararNatural, unirCajas, type CapaFija, type Caja, type Datos, type Estructura, type Modelo, type ModoColor } from './datos';
 import type { Previa } from './SubirIfc';
 import Panel from './Panel';
 import Ficha from './Ficha';
 import Leyenda from './Leyenda';
 import PlanoGeneral from './PlanoGeneral';
 import Tablero from './Tablero';
+const EliminarModelo = lazy(() => import('./EliminarModelo'));
 
 // three.js solo se descarga cuando alguien abre la vista 3D.
 const Vista3D = lazy(() => import('./Vista3D'));
@@ -57,6 +58,7 @@ export default function App() {
   const [encuadre, setEncuadre] = useState<Encuadre | null>(null);
   const [panelAbierto, setPanelAbierto] = useState(() => window.innerWidth > 760);
   const [subiendo, setSubiendo] = useState(false);
+  const [eliminando, setEliminando] = useState<Modelo | null>(null);
   const ultimoEncuadre = useRef<Caja | null>(null);
 
   useEffect(() => {
@@ -134,6 +136,16 @@ export default function App() {
     encuadrar(unirCajas(previas.map((p) => p.modelo.bbox_utm)));
   }, [encuadrar]);
 
+  /** Tras publicar el borrado de un IFC, lo quita también de este navegador. */
+  const quitarModelo = (codigo: string) => {
+    setDatos((d) => d && {
+      ...d,
+      manifest: { ...d.manifest, modelos: d.manifest.modelos.filter((m) => m.codigo !== codigo) },
+      trazado: { ...d.trazado, features: d.trazado.features.filter((f) => String(f.properties?.modelo_codigo) !== codigo) },
+    });
+    setSeleccion((s) => (s && s.modelo_codigo === codigo ? null : s));
+  };
+
   if (error) return <div className="pantalla-mensaje">{error}</div>;
   if (!datos) return <div className="pantalla-mensaje">Cargando el proyecto…</div>;
 
@@ -188,6 +200,8 @@ export default function App() {
             setOcultos={setOcultos}
             enfocar={enfocar}
             quitarFoco={() => setFoco(null)}
+            enfocarModelo={(m) => { setFoco({ campo: 'componente', valor: m.componente }); setOcultos((prev) => { const n = new Set(prev); n.delete(m.codigo); return n; }); encuadrar(m.bbox_utm); }}
+            pedirEliminar={setEliminando}
           />
           <main className="lienzo">
             {vista === 'plano' ? (
@@ -212,6 +226,11 @@ export default function App() {
       {subiendo && (
         <Suspense fallback={null}>
           <SubirIfc datos={datos} verAqui={verAqui} cerrar={() => setSubiendo(false)} />
+        </Suspense>
+      )}
+      {eliminando && (
+        <Suspense fallback={null}>
+          <EliminarModelo modelo={eliminando} cerrar={() => setEliminando(null)} alEliminar={quitarModelo} />
         </Suspense>
       )}
     </div>

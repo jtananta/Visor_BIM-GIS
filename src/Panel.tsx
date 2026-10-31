@@ -13,6 +13,10 @@ interface Props {
   setOcultos: Dispatch<SetStateAction<Set<string>>>;
   enfocar: (f: Foco) => void;
   quitarFoco: () => void;
+  /** Encuadra un solo IFC. */
+  enfocarModelo: (m: Modelo) => void;
+  /** Abre la confirmación para eliminar un IFC publicado. */
+  pedirEliminar: (m: Modelo) => void;
 }
 
 interface Fila {
@@ -25,6 +29,14 @@ function Ojo({ visible }: { visible: boolean }) {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" opacity={visible ? 1 : 0.35} />
       {visible ? <circle cx="12" cy="12" r="3" /> : <line x1="3" y1="21" x2="21" y2="3" />}
+    </svg>
+  );
+}
+
+function Papelera() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
     </svg>
   );
 }
@@ -130,10 +142,27 @@ export default function Panel(p: Props) {
                               <span className="modelo-nombre">{comp.descripcion}</span>
                               <span className="sutil">
                                 {comp.componente}
-                                {tiene ? ` · ${mods.map((m) => m.modelo).join(', ')} · ${estructuras} estructuras` : ' · sin modelo'}
+                                {tiene ? (mods.length > 1 ? ` · ${mods.length} IFC · ${estructuras} estructuras` : ` · ${mods[0].modelo} · ${estructuras} estructuras`) : ' · sin modelo'}
                               </span>
                             </button>
                             <span className="estado-punto" title={comp.estado} style={{ background: COLOR_ESTADO[comp.estado] ?? COLOR_ESTADO['Sin asignar'] }} />
+                            {mods.length > 1 && (
+                              <ul className="ifcs-comp" aria-label={`IFC de ${comp.componente}`}>
+                                {mods.map((m) => (
+                                  <li key={m.codigo} className={p.ocultos.has(m.codigo) ? 'oculto' : ''}>
+                                    {ojoGrupo([m], m.modelo)}
+                                    <button className="modelo" onClick={() => p.enfocarModelo(m)} title="Enfocar este IFC">
+                                      <span className="ifc-nombre">{m.modelo}</span>
+                                      <span className="sutil">{m.estructuras} estructuras</span>
+                                    </button>
+                                    <button className="btn-ojo btn-borrar" onClick={() => p.pedirEliminar(m)} aria-label={`Eliminar ${m.modelo}`} title="Eliminar este IFC"><Papelera /></button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                            {mods.length === 1 && (
+                              <button className="btn-ojo btn-borrar" onClick={() => p.pedirEliminar(mods[0])} aria-label={`Eliminar ${mods[0].modelo}`} title="Eliminar este IFC"><Papelera /></button>
+                            )}
                           </li>
                         );
                       })}

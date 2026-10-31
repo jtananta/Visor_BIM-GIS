@@ -139,3 +139,29 @@ export async function publicarCapa(con: Conexion, capa: CapaFija, datos: Uint8Ar
 export function slug(nombre: string): string {
   return nombre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'capa';
 }
+
+/**
+ * Elimina modelos publicados: los quita del manifest, del trazado y del catálogo, y borra sus GLB, todo en un
+ * solo commit. Lee antes el estado actual del repositorio para no pisar cambios de otros.
+ */
+export async function eliminarModelos(con: Conexion, codigos: string[], avisar: (t: string) => void): Promise<void> {
+  avisar('Leyendo el estado actual del visor…');
+  const [m, t, cat] = await Promise.all([
+    leerTexto(con, `${RAIZ_DATOS}manifest.json`),
+    leerTexto(con, `${RAIZ_DATOS}trazado.geojson`),
+    leerTexto(con, `${RAIZ_DATOS}catalogo.csv`),
+  ]);
+  if (!m) throw new Error(`No encontré ${RAIZ_DATOS}manifest.json en el repositorio.`);
+  const quitar = new Set(codigos);
+  const manifest: Manifest = JSON.parse(m);
+  const fuera = manifest.modelos.filter((x) => quitar.has(x.codigo));
+  if (!fuera.length) throw new Error('Ese modelo ya no está publicado. Recarga la página.');
+  const cambios: Cambios = {};
+  for (const x of fuera) cambios[`${RAIZ_DATOS}${x.glb}`] = null;
+  archivosModelos(manifest, {
+    modelos: manifest.modelos.filter((x) => !quitar.has(x.codigo)),
+    features: (t ? JSON.parse(t).features : []).filter((f: { properties?: { modelo_codigo?: string } }) => !quitar.has(String(f.properties?.modelo_codigo))),
+    catalogo: (cat ? parseCsv(cat) : []).filter((f) => !quitar.has(f.codigo)),
+  }, cambios);
+  await publicar(con, cambios, `Visor: elimina ${fuera.map((x) => x.codigo).join(', ')}`, avisar);
+}
