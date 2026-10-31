@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { compararNatural, type Datos, type Modelo } from './datos';
 import type { Resultado } from './admin/convertir';
 import { guardarConexion, leerConexion, probarConexion, type Conexion } from './admin/github';
-import { convertirEnWorker, leerContexto, publicarModelos, ubicarResultado, type Contexto } from './admin/modelos';
+import { componentePorUbicacion, convertirEnWorker, leerContexto, publicarModelos, ubicarResultado, type Contexto } from './admin/modelos';
 
 interface Item {
   archivo: string;
@@ -75,7 +75,11 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
         const cambiar = (patch: Partial<Item>) => setItems((l) => l.map((x) => (x.archivo === f.name ? { ...x, ...patch } : x)));
         try {
           const r = await convertirEnWorker(f, ctx, (texto, avance) => cambiar({ texto, avance }));
-          const item: Item = { archivo: f.name, estado: 'listo', avance: 1, texto: `${r.reporte.estructuras} estructuras · ${r.reporte.kb} KB`, resultado: r, componente: String(r.modelo.componente ?? '') };
+          const cerca = componentePorUbicacion(r.modelo.bbox_utm as number[], datos.manifest.modelos.filter((m) => m.codigo !== r.codigo));
+          const porTexto = String(r.modelo.componente ?? '');
+          const componente = cerca && datos.componentes.some((c) => c.componente === cerca) ? cerca : porTexto;
+          const nota = componente !== porTexto ? ' · componente sugerido por ubicación (revísalo)' : '';
+          const item: Item = { archivo: f.name, estado: 'listo', avance: 1, texto: `${r.reporte.estructuras} estructuras · ${r.reporte.kb} KB${nota}`, resultado: r, componente };
           cambiar(item);
           mostrar([item]);
         } catch (e) {

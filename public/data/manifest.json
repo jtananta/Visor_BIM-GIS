@@ -108,10 +108,10 @@
     {
       "codigo": "500125-CSSP001-000-XX-MD-BM-000023",
       "modelo": "500125-CSSP001-000-XX-MD-BM-000023",
-      "sector": "Sector 3",
-      "paquete": "Paquete 30",
-      "componente": "Componente 301",
-      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
+      "sector": "Sector 1",
+      "paquete": "Paquete 7",
+      "componente": "Componente 11.1",
+      "componente_desc": "DRENAJE URBANO FAP",
       "glb": "models/500125-CSSP001-000-XX-MD-BM-000023.glb",
       "estructuras": 9,
       "tipos": {
@@ -368,10 +368,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-BM-000822",
       "modelo": "500125-CSSP001-780-XX-MD-BM-000822",
-      "sector": "Sector 3",
-      "paquete": "Paquete 30",
-      "componente": "Componente 301",
-      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
+      "sector": "Sector 1",
+      "paquete": "Paquete 8",
+      "componente": "Componente 11.2",
+      "componente_desc": "DRENAJE URBANO JESUS MARIA",
       "glb": "models/500125-CSSP001-780-XX-MD-BM-000822.glb",
       "estructuras": 3,
       "tipos": {

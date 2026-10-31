@@ -165,3 +165,22 @@ export async function eliminarModelos(con: Conexion, codigos: string[], avisar: 
   }, cambios);
   await publicar(con, cambios, `Visor: elimina ${fuera.map((x) => x.codigo).join(', ')}`, avisar);
 }
+
+/**
+ * Componente sugerido por ubicación: el de los modelos ya publicados que más se superponen en planta con el
+ * nuevo. Los paquetes del proyecto ocupan zonas distintas, así que la ubicación acierta más que las palabras
+ * del nombre del IFC (p. ej. «estructura de descarga» aparece en componentes de varios paquetes).
+ */
+export function componentePorUbicacion(caja: number[], modelos: Modelo[], margen = 30): string | null {
+  const puntos = new Map<string, number>();
+  for (const m of modelos) {
+    const b = m.bbox_utm;
+    if (!b) continue;
+    const ancho = Math.min(caja[2] + margen, b[2] + margen) - Math.max(caja[0] - margen, b[0] - margen);
+    const alto = Math.min(caja[3] + margen, b[3] + margen) - Math.max(caja[1] - margen, b[1] - margen);
+    if (ancho > 0 && alto > 0) puntos.set(m.componente, (puntos.get(m.componente) ?? 0) + ancho * alto);
+  }
+  let mejor: string | null = null, max = 0;
+  for (const [c, v] of puntos) if (v > max) { mejor = c; max = v; }
+  return mejor;
+}

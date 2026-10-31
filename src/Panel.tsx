@@ -1,4 +1,4 @@
-import { useMemo, type Dispatch, type SetStateAction } from 'react';
+import { useMemo, useState, type Dispatch, type SetStateAction } from 'react';
 import type { Foco } from './App';
 import { COLOR_ESTADO, colorSector, compararNatural, type Componente, type Datos, type Modelo } from './datos';
 
@@ -85,6 +85,18 @@ export default function Panel(p: Props) {
     );
   };
 
+  // Grupos abiertos: «s:» sector, «p:» paquete, «c:» lista de IFC de un componente.
+  const [abiertos, setAbiertos] = useState<Set<string>>(() => new Set(modelos.flatMap((m) => [`s:${m.sector}`, `p:${m.paquete}`])));
+  const [soloConModelo, setSoloConModelo] = useState(false);
+  const abrir = (k: string, si: boolean) => setAbiertos((prev) => {
+    if (prev.has(k) === si) return prev;
+    const n = new Set(prev);
+    if (si) n.add(k); else n.delete(k);
+    return n;
+  });
+  const agrupar = () => setAbiertos(new Set());
+  const desagrupar = () => setAbiertos(new Set(modelos.flatMap((m) => [`s:${m.sector}`, `p:${m.paquete}`, `c:${m.componente}`])));
+
   return (
     <aside className={`panel ${p.abierto ? 'abierto' : ''}`} aria-label="Paquetes del proyecto">
       <div className="panel-cab">
@@ -93,6 +105,11 @@ export default function Panel(p: Props) {
           <p className="sutil">{conModelo} de {totalComp} componentes con modelo BIM</p>
         </div>
         <button className="btn-icono solo-movil" onClick={p.cerrar} aria-label="Cerrar panel">✕</button>
+      </div>
+      <div className="panel-herramientas">
+        <button className="btn chico" onClick={agrupar} title="Contraer sectores, paquetes e IFC">⊟ Agrupar</button>
+        <button className="btn chico" onClick={desagrupar} title="Abrir todo lo que tiene modelo, con cada IFC">⊞ Desagrupar</button>
+        <label className="check"><input type="checkbox" checked={soloConModelo} onChange={(e) => setSoloConModelo(e.target.checked)} /> Solo con modelo</label>
       </div>
 
       {p.foco && (
@@ -106,8 +123,9 @@ export default function Panel(p: Props) {
         {[...arbol.keys()].sort(compararNatural).map((s) => {
           const ps = arbol.get(s)!;
           const modsSector = modelos.filter((m) => m.sector === s);
+          if (soloConModelo && !modsSector.length) return null;
           return (
-            <details key={s} className="sector" open={modsSector.length > 0}>
+            <details key={s} className="sector" open={abiertos.has(`s:${s}`)} onToggle={(e) => abrir(`s:${s}`, e.currentTarget.open)}>
               <summary className="sector-cab">
                 {ojoGrupo(modsSector, s)}
                 <span className="punto" style={{ background: colorSector(p.sectores, s) }} />
@@ -120,8 +138,9 @@ export default function Panel(p: Props) {
                 const filas = ps.get(paq)!;
                 const modsPaq = modelos.filter((m) => m.paquete === paq);
                 const atenuado = p.foco !== null && p.foco.campo !== 'componente' && !(p.foco.campo === 'sector' ? s === p.foco.valor : paq === p.foco.valor);
+                if (soloConModelo && !modsPaq.length) return null;
                 return (
-                  <details key={paq} className={`paquete ${atenuado ? 'atenuado' : ''} ${modsPaq.length ? '' : 'sin-modelo'}`} open={modsPaq.length > 0}>
+                  <details key={paq} className={`paquete ${atenuado ? 'atenuado' : ''} ${modsPaq.length ? '' : 'sin-modelo'}`} open={abiertos.has(`p:${paq}`)} onToggle={(e) => abrir(`p:${paq}`, e.currentTarget.open)}>
                     <summary className="paquete-cab">
                       {ojoGrupo(modsPaq, paq)}
                       <button className="paquete-nombre" disabled={!modsPaq.length}
@@ -133,6 +152,8 @@ export default function Panel(p: Props) {
                         const tiene = mods.length > 0;
                         const visible = mods.some((m) => !p.ocultos.has(m.codigo));
                         const estructuras = mods.reduce((n, m) => n + m.estructuras, 0);
+                        if (soloConModelo && !tiene) return null;
+                        const verIfc = abiertos.has(`c:${comp.componente}`);
                         return (
                           <li key={comp.componente} className={`${tiene ? '' : 'sin-modelo'} ${tiene && !visible ? 'oculto' : ''}`}>
                             {ojoGrupo(mods, comp.descripcion)}
@@ -142,11 +163,15 @@ export default function Panel(p: Props) {
                               <span className="modelo-nombre">{comp.descripcion}</span>
                               <span className="sutil">
                                 {comp.componente}
-                                {tiene ? (mods.length > 1 ? ` · ${mods.length} IFC · ${estructuras} estructuras` : ` · ${mods[0].modelo} · ${estructuras} estructuras`) : ' · sin modelo'}
+                                {tiene ? (mods.length > 1 ? ` · ${estructuras} estructuras` : ` · ${mods[0].modelo} · ${estructuras} estructuras`) : ' · sin modelo'}
                               </span>
                             </button>
                             <span className="estado-punto" title={comp.estado} style={{ background: COLOR_ESTADO[comp.estado] ?? COLOR_ESTADO['Sin asignar'] }} />
                             {mods.length > 1 && (
+                              <button className="btn-ifc" onClick={() => abrir(`c:${comp.componente}`, !verIfc)} aria-expanded={verIfc}
+                                title={verIfc ? 'Agrupar los IFC' : 'Ver cada IFC'}>{mods.length} IFC {verIfc ? '▾' : '▸'}</button>
+                            )}
+                            {mods.length > 1 && verIfc && (
                               <ul className="ifcs-comp" aria-label={`IFC de ${comp.componente}`}>
                                 {mods.map((m) => (
                                   <li key={m.codigo} className={p.ocultos.has(m.codigo) ? 'oculto' : ''}>

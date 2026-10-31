@@ -4,7 +4,7 @@ import { leerVector } from '../gis';
 import { aCsv, CAMPOS_COMPONENTE, leerExcel, ubicacionDe } from './catalogo';
 import type { Proyecto, Reglas, Resultado } from './convertir';
 import { guardarConexion, leerConexion, leerTexto, probarConexion, publicar, RAIZ_DATOS, type Cambios, type Conexion } from './github';
-import { agregarModelos, archivosModelos, convertirEnWorker, parseCsv } from './modelos';
+import { agregarModelos, archivosModelos, componentePorUbicacion, convertirEnWorker, parseCsv } from './modelos';
 import { geotiffAWebp } from './raster';
 import { esGeotiffDeElevaciones, leerSuperficie } from './superficie';
 
@@ -138,7 +138,10 @@ export default function Admin() {
     try {
       const r = await convertirEnWorker(f, { reglas: reglas!, proyecto: proyecto!, componentes: repo?.componentes ?? [] },
         (texto, avance) => actualizar({ texto, avance }));
-      actualizar({ estado: 'listo', avance: 1, texto: 'Listo para publicar', resultado: r, componente: String(r.modelo.componente ?? '') });
+      const cerca = componentePorUbicacion(r.modelo.bbox_utm as number[], (repo?.manifest.modelos ?? []).filter((m) => m.codigo !== r.codigo));
+      const porTexto = String(r.modelo.componente ?? '');
+      const componente = cerca && repo?.componentes.some((c) => c.componente === cerca) ? cerca : porTexto;
+      actualizar({ estado: 'listo', avance: 1, texto: componente !== porTexto ? 'Listo para publicar · componente sugerido por ubicación (revísalo)' : 'Listo para publicar', resultado: r, componente });
     } catch (e) {
       actualizar({ estado: 'error', texto: `No se pudo convertir: ${e instanceof Error ? e.message : e}` });
     }
