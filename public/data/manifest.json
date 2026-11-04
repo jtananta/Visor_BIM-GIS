@@ -1395,6 +1395,73 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000343",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000343",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 301",
+      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000343.glb",
+      "estructuras": 91,
+      "tipos": {
+        "Box": 4,
+        "Buzón": 21,
+        "Otros": 55,
+        "Tubería": 11
+      },
+      "metrados": {
+        "Box": {
+          "n": 4,
+          "ml": 249.49
+        },
+        "Buzón": {
+          "n": 21
+        },
+        "Otros": {
+          "n": 55
+        },
+        "Tubería": {
+          "n": 11,
+          "ml": 567.35
+        }
+      },
+      "bbox_utm": [
+        470266.3511889009,
+        9493058.633316776,
+        470813.07900065335,
+        9493386.721761305
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000344",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000344",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 300",
+      "componente_desc": "Canal Aproviser",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000344.glb",
+      "estructuras": 2,
+      "tipos": {
+        "Canal": 1,
+        "Otros": 1
+      },
+      "metrados": {
+        "Canal": {
+          "n": 1,
+          "ml": 84
+        },
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        470801.5495545661,
+        9493070.908270039,
+        470884.75121723086,
+        9493090.964795377
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000346",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000346",
       "sector": "Sector 3",
@@ -1430,6 +1497,34 @@
         9493044.0445,
         470600.49198165623,
         9494596.077637976
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000347",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000347",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 304",
+      "componente_desc": "Sistema de drenaje urbano Aproviser I",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000347.glb",
+      "estructuras": 2,
+      "tipos": {
+        "Otros": 1,
+        "Sumidero": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        },
+        "Sumidero": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469744.5217518572,
+        9494593.747047551,
+        469756.93707046245,
+        9494599.436394108
       ]
     }
   ]
