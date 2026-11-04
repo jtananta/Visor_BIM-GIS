@@ -1460,6 +1460,34 @@
         470600.49198165623,
         9494596.077637976
       ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000347",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000347",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 304",
+      "componente_desc": "Sistema de drenaje urbano Aproviser I",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000347.glb",
+      "estructuras": 2,
+      "tipos": {
+        "Otros": 1,
+        "Sumidero": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        },
+        "Sumidero": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469744.5217518572,
+        9494593.747047551,
+        469756.93707046245,
+        9494599.436394108
+      ]
     }
   ]
 }
