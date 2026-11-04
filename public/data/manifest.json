@@ -1235,6 +1235,44 @@
         471303.44771993987,
         9493171.144768694
       ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000341",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000341",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 300",
+      "componente_desc": "Canal Aproviser",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000341.glb",
+      "estructuras": 79,
+      "tipos": {
+        "Box": 7,
+        "Buzón": 18,
+        "Otros": 44,
+        "Tubería": 10
+      },
+      "metrados": {
+        "Box": {
+          "n": 7,
+          "ml": 387.86
+        },
+        "Buzón": {
+          "n": 18
+        },
+        "Otros": {
+          "n": 44
+        },
+        "Tubería": {
+          "n": 10,
+          "ml": 424.82
+        }
+      },
+      "bbox_utm": [
+        470843.83651892375,
+        9493057.754505906,
+        471303.20546816743,
+        9493170.643064879
+      ]
     }
   ]
 }
