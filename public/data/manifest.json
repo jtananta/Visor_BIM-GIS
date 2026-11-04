@@ -472,10 +472,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-CV-000322",
       "modelo": "500125-CSSP001-780-XX-MD-CV-000322",
-      "sector": "Sector 1",
-      "paquete": "Paquete 7",
-      "componente": "Componente 11.1",
-      "componente_desc": "DRENAJE URBANO FAP",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 301",
+      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
       "glb": "models/500125-CSSP001-780-XX-MD-CV-000322.glb",
       "estructuras": 1,
       "tipos": {
@@ -496,10 +496,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-CV-000323",
       "modelo": "500125-CSSP001-780-XX-MD-CV-000323",
-      "sector": "Sector 1",
-      "paquete": "Paquete 7",
-      "componente": "Componente 11.1",
-      "componente_desc": "DRENAJE URBANO FAP",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 301",
+      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
       "glb": "models/500125-CSSP001-780-XX-MD-CV-000323.glb",
       "estructuras": 1,
       "tipos": {
@@ -522,8 +522,8 @@
       "modelo": "500125-CSSP001-780-XX-MD-CV-000324",
       "sector": "Sector 3",
       "paquete": "Paquete 30",
-      "componente": "Componente 302",
-      "componente_desc": "Canales Bolognesi I, Bolognesi II y Alcantarilla",
+      "componente": "Componente 300",
+      "componente_desc": "Canal Aproviser",
       "glb": "models/500125-CSSP001-780-XX-MD-CV-000324.glb",
       "estructuras": 1,
       "tipos": {
@@ -544,10 +544,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-CV-000325",
       "modelo": "500125-CSSP001-780-XX-MD-CV-000325",
-      "sector": "Sector 1",
-      "paquete": "Paquete 9",
-      "componente": "Componente 27",
-      "componente_desc": "DRENAJE URBANO - LUCY VILLANUEVA",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 301",
+      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
       "glb": "models/500125-CSSP001-780-XX-MD-CV-000325.glb",
       "estructuras": 1,
       "tipos": {
@@ -1397,10 +1397,10 @@
     {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000346",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000346",
-      "sector": "Sector 1",
-      "paquete": "Paquete 7",
-      "componente": "Componente 11.1",
-      "componente_desc": "DRENAJE URBANO FAP",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 301",
+      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000346.glb",
       "estructuras": 655,
       "tipos": {
