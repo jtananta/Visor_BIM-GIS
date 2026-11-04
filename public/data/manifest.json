@@ -470,6 +470,30 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-CV-000337",
+      "modelo": "500125-CSSP001-780-XX-MD-CV-000337",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 300",
+      "componente_desc": "Canal Aproviser",
+      "glb": "models/500125-CSSP001-780-XX-MD-CV-000337.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        470798.52159114624,
+        9493067.880189054,
+        470887.9756164148,
+        9493094.233599775
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000091",
       "modelo": "Sumideros",
       "paquete": "Paquete 9",
