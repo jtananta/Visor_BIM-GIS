@@ -1369,6 +1369,44 @@
         471303.20546816743,
         9493170.643064879
       ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000346",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000346",
+      "sector": "Sector 1",
+      "paquete": "Paquete 7",
+      "componente": "Componente 11.1",
+      "componente_desc": "DRENAJE URBANO FAP",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000346.glb",
+      "estructuras": 655,
+      "tipos": {
+        "Box": 17,
+        "Buzón": 143,
+        "Otros": 436,
+        "Tubería": 59
+      },
+      "metrados": {
+        "Box": {
+          "n": 17,
+          "ml": 1103.77
+        },
+        "Buzón": {
+          "n": 143
+        },
+        "Otros": {
+          "n": 436
+        },
+        "Tubería": {
+          "n": 59,
+          "ml": 7998.55
+        }
+      },
+      "bbox_utm": [
+        469748.4424775209,
+        9493044.0445,
+        470600.49198165623,
+        9494596.077637976
+      ]
     }
   ]
 }
