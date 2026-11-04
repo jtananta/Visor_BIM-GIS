@@ -6,6 +6,7 @@ import { compararNatural, type CapaFija, type Componente, type Manifest, type Mo
 import { aCsv, ubicacionDe } from './catalogo';
 import type { Proyecto, Reglas, Resultado } from './convertir';
 import type { Pedido } from './convertir.worker';
+import { coleccion, porModelo, rutaTrazado, TRAZADO_ANTIGUO } from '../trazado';
 import { leerTexto, publicar, RAIZ_DATOS, type Cambios, type Conexion } from './github';
 
 export interface Contexto {
@@ -59,32 +60,53 @@ export interface Listo {
 
 export interface DatosModelos {
   modelos: Modelo[];
-  features: GeoJSON.Feature[];
+  /** Trazado de los modelos que cambian, por código; cada uno se guarda en su propio archivo. */
+  trazados: Record<string, GeoJSON.Feature[]>;
   catalogo: Record<string, string>[];
 }
 
 /** Agrega o reemplaza modelos convertidos; deja en `cambios` los GLB a subir. */
 export function agregarModelos(base: DatosModelos, listos: Listo[], componentes: Componente[], cambios: Cambios): DatosModelos {
-  let { modelos, features } = base;
+  let { modelos } = base;
+  const trazados = { ...base.trazados };
   const catalogo = [...base.catalogo];
   for (const { resultado: r, componente } of listos) {
     const u = ubicarResultado(r, componente, componentes);
     modelos = [...modelos.filter((m) => m.codigo !== r.codigo), u.modelo];
-    features = [...features.filter((f) => f.properties?.modelo_codigo !== r.codigo), ...u.features];
+    trazados[r.codigo] = u.features;
     const fila = { codigo: r.codigo, modelo: r.descripcion, componente, descripcion_ifc: r.edificio, revisado: 'sí' };
     const i = catalogo.findIndex((c) => c.codigo === r.codigo);
     if (i >= 0) catalogo[i] = fila; else catalogo.push(fila);
     cambios[`${RAIZ_DATOS}models/${r.codigo}.glb`] = r.glb;
   }
   modelos = [...modelos].sort((a, b) => compararNatural(a.codigo, b.codigo));
-  return { modelos, features, catalogo };
+  return { modelos, trazados, catalogo };
 }
 
-/** Archivos de datos que cambian al publicar modelos. */
+/** Archivos de datos que cambian al publicar modelos: manifest, catálogo y el trazado de cada modelo que cambia. */
 export function archivosModelos(manifest: Manifest, d: DatosModelos, cambios: Cambios) {
   cambios[`${RAIZ_DATOS}manifest.json`] = JSON.stringify({ ...manifest, modelos: d.modelos }, null, 2);
-  cambios[`${RAIZ_DATOS}trazado.geojson`] = JSON.stringify({ type: 'FeatureCollection', features: d.features });
+  for (const [codigo, features] of Object.entries(d.trazados)) cambios[`${RAIZ_DATOS}${rutaTrazado(codigo)}`] = coleccion(features);
   cambios[`${RAIZ_DATOS}catalogo.csv`] = aCsv(d.catalogo, ['codigo', 'modelo', 'componente', 'descripcion_ifc', 'revisado']);
+}
+
+/**
+ * Si el repositorio aún tiene el trazado en un solo archivo (versiones anteriores), lo divide en un archivo
+ * por modelo para los `conservar` y borra el archivo único, todo dentro del mismo commit que se está armando.
+ * Devuelve los trazados a escribir, o null si ya estaba dividido.
+ */
+export async function dividirTrazadoAntiguo(con: Conexion, conservar: string[], cambios: Cambios): Promise<Record<string, GeoJSON.Feature[]> | null> {
+  const t = await leerTexto(con, `${RAIZ_DATOS}${TRAZADO_ANTIGUO}`);
+  if (t === null) return null;
+  const grupos = porModelo(JSON.parse(t).features ?? []);
+  cambios[`${RAIZ_DATOS}${TRAZADO_ANTIGUO}`] = null;
+  return Object.fromEntries(conservar.map((c) => [c, grupos.get(c) ?? []]));
+}
+
+/** Borra el trazado de los modelos quitados (si el trazado recién se dividió, esos archivos nunca existieron). */
+export function quitarTrazados(codigos: Iterable<string>, recienDividido: boolean, cambios: Cambios) {
+  if (recienDividido) return;
+  for (const c of codigos) cambios[`${RAIZ_DATOS}${rutaTrazado(c)}`] = null;
 }
 
 export function parseCsv(t: string): Record<string, string>[] {
@@ -106,17 +128,17 @@ export function parseCsv(t: string): Record<string, string>[] {
 /** Publica modelos leyendo antes el estado actual del repositorio, para no pisar cambios de otros. */
 export async function publicarModelos(con: Conexion, listos: Listo[], componentes: Componente[], avisar: (t: string) => void): Promise<void> {
   avisar('Leyendo el estado actual del visor…');
-  const [m, t, cat] = await Promise.all([
+  const [m, cat] = await Promise.all([
     leerTexto(con, `${RAIZ_DATOS}manifest.json`),
-    leerTexto(con, `${RAIZ_DATOS}trazado.geojson`),
     leerTexto(con, `${RAIZ_DATOS}catalogo.csv`),
   ]);
   if (!m) throw new Error(`No encontré ${RAIZ_DATOS}manifest.json en el repositorio.`);
   const manifest: Manifest = JSON.parse(m);
   const cambios: Cambios = {};
+  const divididos = await dividirTrazadoAntiguo(con, manifest.modelos.map((x) => x.codigo), cambios);
   const d = agregarModelos({
     modelos: manifest.modelos,
-    features: t ? JSON.parse(t).features : [],
+    trazados: divididos ?? {},
     catalogo: cat ? parseCsv(cat) : [],
   }, listos, componentes, cambios);
   archivosModelos(manifest, d, cambios);
@@ -146,9 +168,8 @@ export function slug(nombre: string): string {
  */
 export async function eliminarModelos(con: Conexion, codigos: string[], avisar: (t: string) => void): Promise<void> {
   avisar('Leyendo el estado actual del visor…');
-  const [m, t, cat] = await Promise.all([
+  const [m, cat] = await Promise.all([
     leerTexto(con, `${RAIZ_DATOS}manifest.json`),
-    leerTexto(con, `${RAIZ_DATOS}trazado.geojson`),
     leerTexto(con, `${RAIZ_DATOS}catalogo.csv`),
   ]);
   if (!m) throw new Error(`No encontré ${RAIZ_DATOS}manifest.json en el repositorio.`);
@@ -158,9 +179,12 @@ export async function eliminarModelos(con: Conexion, codigos: string[], avisar: 
   if (!fuera.length) throw new Error('Ese modelo ya no está publicado. Recarga la página.');
   const cambios: Cambios = {};
   for (const x of fuera) cambios[`${RAIZ_DATOS}${x.glb}`] = null;
+  const quedan = manifest.modelos.filter((x) => !quitar.has(x.codigo));
+  const divididos = await dividirTrazadoAntiguo(con, quedan.map((x) => x.codigo), cambios);
+  quitarTrazados(fuera.map((x) => x.codigo), divididos !== null, cambios);
   archivosModelos(manifest, {
-    modelos: manifest.modelos.filter((x) => !quitar.has(x.codigo)),
-    features: (t ? JSON.parse(t).features : []).filter((f: { properties?: { modelo_codigo?: string } }) => !quitar.has(String(f.properties?.modelo_codigo))),
+    modelos: quedan,
+    trazados: divididos ?? {},
     catalogo: (cat ? parseCsv(cat) : []).filter((f) => !quitar.has(f.codigo)),
   }, cambios);
   await publicar(con, cambios, `Visor: elimina ${fuera.map((x) => x.codigo).join(', ')}`, avisar);

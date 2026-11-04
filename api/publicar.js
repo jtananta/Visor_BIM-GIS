@@ -11,7 +11,10 @@
  * Acciones (POST JSON, cabecera x-clave):
  *   { accion: 'probar' }
  *   { accion: 'leer', ruta }                 → texto del archivo o 404
- *   { accion: 'blob', contenido }            → { sha }   (contenido en base64; uno por pedido por el límite de 4,5 MB)
+ *   { accion: 'blob', contenido }            → { sha }   (contenido en base64; solo para archivos chicos)
+ *   POST ?accion=blob con Content-Type: application/octet-stream y los bytes crudos → { sha }
+ *     (forma preferida: sin base64 en el pedido, un archivo de 4 MB cabe en el límite de 4,5 MB de Vercel;
+ *      el base64 que pide GitHub se arma aquí)
  *   { accion: 'commit', mensaje, arbol }     → { sha }   (arbol: [{ path, sha | null }])
  */
 import { timingSafeEqual } from 'node:crypto';
@@ -35,6 +38,17 @@ function claveValida(dada) {
 }
 
 const rutaValida = (p) => typeof p === 'string' && p.startsWith(RAIZ) && !p.includes('..') && !p.includes('\\');
+
+/** Tope por archivo crudo; el pedido entero no puede pasar de 4,5 MB en Vercel. */
+const MAX_BYTES = 4 * 1024 * 1024;
+
+/** Bytes crudos del pedido: Vercel ya los entrega como Buffer para octet-stream; si no, se leen del stream. */
+async function cuerpoCrudo(req) {
+  if (Buffer.isBuffer(req.body)) return req.body;
+  const partes = [];
+  for await (const p of req) partes.push(p);
+  return Buffer.concat(partes);
+}
 
 class Fallo extends Error {
   constructor(status, message) { super(message); this.status = status; }
@@ -69,8 +83,20 @@ export default async function handler(req, res) {
   }
   if (!claveValida(req.headers['x-clave'])) return res.status(401).json({ error: 'La clave de publicación no es correcta.' });
 
-  const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body ?? {});
   const R = repo();
+  if (req.query?.accion === 'blob' || String(req.headers['content-type'] || '').startsWith('application/octet-stream')) {
+    try {
+      const datos = await cuerpoCrudo(req);
+      if (!datos.length) return res.status(400).json({ error: 'Falta el contenido.' });
+      if (datos.length > MAX_BYTES) return res.status(413).json({ error: 'El archivo pasa de 4 MB.' });
+      const r = await gh(`/repos/${R}/git/blobs`, { method: 'POST', body: JSON.stringify({ content: datos.toString('base64'), encoding: 'base64' }) });
+      return res.json({ sha: (await r.json()).sha });
+    } catch (e) {
+      return res.status(e.status ?? 500).json({ error: e.message });
+    }
+  }
+
+  const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body ?? {});
   try {
     switch (b.accion) {
       case 'probar': {

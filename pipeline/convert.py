@@ -6,7 +6,7 @@ Uso:
 Salida en <carpeta_salida>:
     models/<codigo>.glb    una malla por estructura, metadata mínima en extras
     manifest.json          lista de modelos, origen y CRS del proyecto
-    trazado.geojson        huella 2D de cada estructura (EPSG:4326)
+    trazado/<codigo>.geojson  huella 2D de cada estructura (EPSG:4326), un archivo por modelo
     catalogo.csv           componente al que pertenece cada modelo (editable; se respeta si ya existe)
 Requiere componentes.csv en <carpeta_salida> (lo genera catalogo.py desde el Excel de paquetes):
 de ahí salen sector, paquete y estado.
@@ -462,8 +462,13 @@ def main():
         "modelos": modelos,
     }
     (salida / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
-    (salida / "trazado.geojson").write_text(
-        json.dumps({"type": "FeatureCollection", "features": features}, ensure_ascii=False), encoding="utf-8")
+    # Un archivo por modelo: así ninguno crece al agregar IFC y el visor puede publicarlos (tope 4 MB por archivo).
+    (salida / "trazado").mkdir(exist_ok=True)
+    for m in modelos:
+        propias = [f for f in features if f["properties"].get("modelo_codigo") == m["codigo"]]
+        (salida / "trazado" / f"{m['codigo']}.geojson").write_text(
+            json.dumps({"type": "FeatureCollection", "features": propias}, ensure_ascii=False), encoding="utf-8")
+    (salida / "trazado.geojson").unlink(missing_ok=True)  # formato anterior: un solo archivo
     escribir_csv(salida / "catalogo.csv", list(catalogo.values()),
                  ["codigo", "modelo", "componente", "descripcion_ifc", "revisado"])
     escribir_csv(salida / "reporte.csv", reportes, list(reportes[0].keys()))

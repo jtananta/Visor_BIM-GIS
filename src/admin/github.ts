@@ -29,16 +29,20 @@ export function guardarConexion(c: Conexion, recordar: boolean) {
 /** Carpeta del repositorio donde viven los datos que lee el visor. */
 export const RAIZ_DATOS = 'public/data/';
 
-/** Tope por archivo: la función de Vercel acepta pedidos de hasta 4,5 MB y el base64 agrega un tercio. */
-const MAX_BYTES = 3.2 * 1024 * 1024;
+/**
+ * Tope por archivo: la función de Vercel acepta pedidos de hasta 4,5 MB. Los archivos viajan como bytes
+ * crudos (sin base64, que agregaría un tercio), así que 4 MB caben con margen.
+ */
+const MAX_BYTES = 4 * 1024 * 1024;
 
-async function api(c: Conexion, cuerpo: Record<string, unknown>): Promise<Response> {
+async function api(c: Conexion, cuerpo: Record<string, unknown> | Uint8Array): Promise<Response> {
+  const crudo = cuerpo instanceof Uint8Array;
   let r: Response;
   try {
-    r = await fetch('api/publicar', {
+    r = await fetch(crudo ? 'api/publicar?accion=blob' : 'api/publicar', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-clave': c.clave },
-      body: JSON.stringify(cuerpo),
+      headers: { 'Content-Type': crudo ? 'application/octet-stream' : 'application/json', 'x-clave': c.clave },
+      body: crudo ? (cuerpo as BodyInit) : JSON.stringify(cuerpo),
     });
   } catch {
     throw new Error('No se pudo contactar al servidor del visor. Revisa tu conexión a internet.');
@@ -61,13 +65,6 @@ export async function probarConexion(c: Conexion): Promise<void> {
   if (r.status === 404) throw new Error('El servidor no encontró el repositorio o la rama configurados en Vercel.');
 }
 
-function aBase64(datos: Uint8Array | string): string {
-  const bytes = typeof datos === 'string' ? new TextEncoder().encode(datos) : datos;
-  let s = '';
-  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-  return btoa(s);
-}
-
 /** Un archivo a escribir (contenido) o a borrar (null). */
 export type Cambios = Record<string, Uint8Array | string | null>;
 
@@ -81,12 +78,12 @@ export async function publicar(c: Conexion, cambios: Cambios, mensaje: string, a
       arbol.push({ path: ruta, sha: null });
       continue;
     }
-    const tam = typeof contenido === 'string' ? new TextEncoder().encode(contenido).length : contenido.length;
-    if (tam > MAX_BYTES) {
-      throw new Error(`${ruta.split('/').pop()} pesa ${(tam / 1048576).toFixed(1)} MB; desde el visor se publican archivos de hasta 3 MB. Divide el IFC o usa el pipeline en Python.`);
+    const bytes = typeof contenido === 'string' ? new TextEncoder().encode(contenido) : contenido;
+    if (bytes.length > MAX_BYTES) {
+      throw new Error(`${ruta.split('/').pop()} pesa ${(bytes.length / 1048576).toFixed(1)} MB; desde el visor se publican archivos de hasta 4 MB. Divide el IFC o usa el pipeline en Python.`);
     }
     avisar?.(`Subiendo ${ruta.split('/').pop()} (${i + 1} de ${rutas.length})…`);
-    const r = await api(c, { accion: 'blob', contenido: aBase64(contenido) });
+    const r = await api(c, bytes);
     arbol.push({ path: ruta, sha: (await r.json()).sha });
   }
   avisar?.('Guardando los cambios…');

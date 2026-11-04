@@ -5,7 +5,9 @@
 set -euo pipefail
 IN="$1"; OUT="$2"; RATIO="${RATIO:-0.5}"; ERROR="${ERROR:-0.001}"
 mkdir -p "$OUT/models"
-cp "$IN"/manifest.json "$IN"/trazado.geojson "$IN"/componentes.csv "$IN"/catalogo.csv "$OUT"/
+cp "$IN"/manifest.json "$IN"/componentes.csv "$IN"/catalogo.csv "$OUT"/
+cp -r "$IN/trazado" "$OUT"/
+rm -f "$OUT/trazado.geojson"  # formato anterior (un solo archivo): ya no se usa
 [ -d "$IN/capas" ] && cp -r "$IN/capas" "$OUT"/
 T="$(mktemp -d)"
 for f in "$IN"/models/*.glb; do

@@ -1,4 +1,5 @@
 import proj4 from 'proj4';
+import { cargarTrazado } from './trazado';
 
 /** Metadata mínima de una estructura: lo único que ve gerencia. */
 export interface Estructura {
@@ -136,15 +137,15 @@ function parseCsv(texto: string): Record<string, string>[] {
 }
 
 export async function cargarDatos(base = 'data/'): Promise<Datos> {
-  const [manifest, trazado, compTxt, capas, estadosPaquete] = await Promise.all([
+  const [manifest, compTxt, capas, estadosPaquete] = await Promise.all([
     fetch(`${base}manifest.json`).then((r) => { if (!r.ok) throw new Error('manifest.json'); return r.json(); }),
-    fetch(`${base}trazado.geojson`).then((r) => { if (!r.ok) throw new Error('trazado.geojson'); return r.json(); }),
     fetch(`${base}componentes.csv`).then((r) => (r.ok ? r.text() : '')).catch(() => ''),
     fetch(`${base}capas/capas.json`).then((r) => (r.ok ? r.json() : [])).catch(() => []),
     fetch(`${base}paquetes.json`).then((r) => (r.ok ? r.json() : {})).catch(() => ({})),
   ]);
+  const trazado = { type: 'FeatureCollection', features: await cargarTrazado(base, (manifest as Manifest).modelos.map((m) => m.codigo)) } as Trazado;
   const componentes = parseCsv(compTxt).filter((f) => f.componente) as unknown as Componente[];
-  for (const f of (trazado as Trazado).features) Object.assign(f.properties, ubicacionModelo(manifest, f.properties.modelo_codigo));
+  for (const f of trazado.features) Object.assign(f.properties, ubicacionModelo(manifest, f.properties.modelo_codigo));
   return { manifest, trazado, componentes, capas: Array.isArray(capas) ? capas : [], estadosPaquete: estadosPaquete && typeof estadosPaquete === 'object' ? (estadosPaquete as Record<string, string>) : {} };
 }
 
