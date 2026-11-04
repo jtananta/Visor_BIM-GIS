@@ -44,7 +44,7 @@ Para cambiar la clave, edita `CLAVE_PUBLICAR` y vuelve a desplegar.
 
 El botón **Subir IFC** de la barra superior convierte el IFC en el navegador y muestra el modelo al instante, solo para quien lo subió.
 Con **Publicar para todos** queda en el link público. La primera vez pide la clave de publicación y la recuerda.
-Desde el visor se publican archivos de hasta 3 MB por modelo liviano. Un IFC de 100 MB suele dar menos de 1 MB.
+Desde el visor se publican archivos de hasta 4 MB por modelo liviano. Un IFC de 100 MB suele dar menos de 1 MB.
 Para quitar modelos, cargar el catálogo o las capas GIS, usa la página de administración.
 
 ## Terreno y superficies en la vista 3D
