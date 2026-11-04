@@ -1395,6 +1395,39 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000342",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000342",
+      "sector": "Sector 3",
+      "paquete": "Paquete 30",
+      "componente": "Componente 301",
+      "componente_desc": "Mejoramiento del canal, estructura de descarga y Alcantarilla Intendencia - Yale",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000342.glb",
+      "estructuras": 55,
+      "tipos": {
+        "Box": 5,
+        "Otros": 38,
+        "Sumidero": 12
+      },
+      "metrados": {
+        "Box": {
+          "n": 5,
+          "ml": 141.84
+        },
+        "Otros": {
+          "n": 38
+        },
+        "Sumidero": {
+          "n": 12
+        }
+      },
+      "bbox_utm": [
+        470289.9922173934,
+        9493058.699937083,
+        470804.8231148467,
+        9493389.250607925
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000343",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000343",
       "sector": "Sector 3",
