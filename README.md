@@ -64,7 +64,7 @@ Escribe la clave de publicación y pulsa **Entrar**.
 
 - **Agregar IFC…**: elige uno o varios IFC. Se convierten en tu navegador, el IFC no se sube. Un IFC de 100 MB tarda unos segundos.
 - Revisa el **componente sugerido**. De él salen el sector, el paquete y el estado que verá gerencia.
-- **Publicar modelos** guarda el modelo liviano (`.glb`), el trazado en planta y el catálogo.
+- **Publicar modelos** guarda el modelo liviano (`.glb`), el trazado en planta y el catálogo. El trazado va en un archivo por modelo (`public/data/trazado/<codigo>.geojson`), así no crece con cada IFC y nunca llega al tope de 4 MB. Si el repositorio todavía tiene el `trazado.geojson` único de versiones anteriores, la primera publicación lo divide y lo borra en el mismo commit.
 - En los modelos ya publicados puedes cambiar el componente o **Quitar** el modelo.
 - Si vuelves a subir un IFC con el mismo nombre, reemplaza al anterior.
 
@@ -100,7 +100,7 @@ La página de administración y los scripts de `pipeline/` leen el mismo archivo
 pip install ifcopenshell numpy shapely pyproj openpyxl rasterio pyogrio
 cd pipeline && npm ci
 python catalogo.py PAQUETES.xlsx salida/              # componentes.csv
-python convert.py carpeta_ifc/ salida/                # GLB + manifest + trazado + catalogo.csv
+python convert.py carpeta_ifc/ salida/                # GLB + manifest + trazado/ + catalogo.csv
 ./optimizar.sh salida/ ../public/data/                # comprime y copia al sitio
 python capas.py carpeta_capas/ ../public/data/        # ortofotos y mapas GIS (en public/data/capas/)
 ```

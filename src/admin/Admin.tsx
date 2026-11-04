@@ -4,7 +4,7 @@ import { leerVector } from '../gis';
 import { aCsv, CAMPOS_COMPONENTE, leerExcel, ubicacionDe } from './catalogo';
 import type { Proyecto, Reglas, Resultado } from './convertir';
 import { guardarConexion, leerConexion, leerTexto, probarConexion, publicar, RAIZ_DATOS, type Cambios, type Conexion } from './github';
-import { agregarModelos, archivosModelos, componentePorUbicacion, convertirEnWorker, parseCsv } from './modelos';
+import { agregarModelos, archivosModelos, componentePorUbicacion, convertirEnWorker, dividirTrazadoAntiguo, parseCsv, quitarTrazados } from './modelos';
 import { geotiffAWebp } from './raster';
 import { esGeotiffDeElevaciones, leerSuperficie } from './superficie';
 
@@ -28,7 +28,6 @@ interface CapaNueva {
 /** Datos del repositorio que la página edita. */
 interface Repo {
   manifest: Manifest;
-  trazado: GeoJSON.FeatureCollection;
   componentes: Componente[];
   catalogo: Record<string, string>[];
   capas: CapaFija[];
@@ -81,9 +80,8 @@ export default function Admin() {
   };
 
   const recargar = async () => {
-    const [m, t, comp, cat, cap] = await Promise.all([
+    const [m, comp, cat, cap] = await Promise.all([
       leerTexto(con, `${RAIZ_DATOS}manifest.json`),
-      leerTexto(con, `${RAIZ_DATOS}trazado.geojson`),
       leerTexto(con, `${RAIZ_DATOS}componentes.csv`),
       leerTexto(con, `${RAIZ_DATOS}catalogo.csv`),
       leerTexto(con, `${RAIZ_DATOS}capas/capas.json`),
@@ -92,7 +90,6 @@ export default function Admin() {
     const capas: CapaFija[] = cap ? JSON.parse(cap) : [];
     setRepo({
       manifest,
-      trazado: t ? JSON.parse(t) : { type: 'FeatureCollection', features: [] },
       componentes: comp ? (parseCsv(comp) as unknown as Componente[]) : [],
       catalogo: cat ? parseCsv(cat) : [],
       capas,
@@ -155,9 +152,11 @@ export default function Admin() {
     try {
       const cambios: Cambios = {};
       let modelos: Modelo[] = repo.manifest.modelos.filter((m) => !quitar.has(m.codigo));
-      const features = repo.trazado.features.filter((f) => !quitar.has(String(f.properties?.modelo_codigo)));
       const catalogo = repo.catalogo.filter((c) => !quitar.has(c.codigo));
       for (const cod of quitar) cambios[`${RAIZ_DATOS}models/${cod}.glb`] = null;
+      // Si el repositorio aún guarda el trazado en un solo archivo, se divide por modelo en este mismo commit.
+      const divididos = await dividirTrazadoAntiguo(con, modelos.map((m) => m.codigo), cambios);
+      quitarTrazados(quitar, divididos !== null, cambios);
 
       // Reasignaciones de componente de modelos ya publicados.
       modelos = modelos.map((m) => {
@@ -169,7 +168,7 @@ export default function Admin() {
         return { ...m, ...ub };
       });
 
-      const d = agregarModelos({ modelos, features, catalogo }, listos.map((p) => ({ resultado: p.resultado!, componente: p.componente })), repo.componentes, cambios);
+      const d = agregarModelos({ modelos, trazados: divididos ?? {}, catalogo }, listos.map((p) => ({ resultado: p.resultado!, componente: p.componente })), repo.componentes, cambios);
       archivosModelos(repo.manifest, d, cambios);
       const partes = [
         listos.length ? `agrega/actualiza ${listos.map((p) => p.resultado!.descripcion).join(', ')}` : '',
