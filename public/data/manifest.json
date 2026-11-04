@@ -542,6 +542,30 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-CV-000325",
+      "modelo": "500125-CSSP001-780-XX-MD-CV-000325",
+      "sector": "Sector 1",
+      "paquete": "Paquete 9",
+      "componente": "Componente 27",
+      "componente_desc": "DRENAJE URBANO - LUCY VILLANUEVA",
+      "glb": "models/500125-CSSP001-780-XX-MD-CV-000325.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469594.6129010379,
+        9494551.17915995,
+        469766.4537604448,
+        9494617.019944634
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-CV-000337",
       "modelo": "500125-CSSP001-780-XX-MD-CV-000337",
       "sector": "Sector 3",
