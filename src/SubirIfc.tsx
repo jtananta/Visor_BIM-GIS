@@ -78,7 +78,8 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
           const cerca = componentePorUbicacion(r.modelo.bbox_utm as number[], datos.manifest.modelos.filter((m) => m.codigo !== r.codigo));
           const porTexto = String(r.modelo.componente ?? '');
           const componente = cerca && datos.componentes.some((c) => c.componente === cerca) ? cerca : porTexto;
-          const nota = componente !== porTexto ? ' · componente sugerido por ubicación (revísalo)' : '';
+          const nota = (componente !== porTexto ? ' · componente sugerido por ubicación (revísalo)' : '')
+            + (r.reporte.aviso ? ` · ${r.reporte.aviso}` : '');
           const item: Item = { archivo: f.name, estado: 'listo', avance: 1, texto: `${r.reporte.estructuras} estructuras · ${r.reporte.kb} KB${nota}`, resultado: r, componente };
           cambiar(item);
           mostrar([item]);

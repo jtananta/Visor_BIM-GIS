@@ -329,7 +329,7 @@ export default function Admin() {
                         {p.estado === 'convirtiendo' && <div className="barra-progreso"><span style={{ width: `${p.avance * 100}%` }} /></div>}
                         <span className={`sutil bloque ${p.estado === 'error' ? 'error-texto' : ''}`}>
                           {p.estado === 'listo' && p.resultado
-                            ? `Nuevo · ${Object.entries(p.resultado.reporte.tipos).map(([t, n]) => `${n} ${t.toLowerCase()}`).join(', ')} · ${p.resultado.reporte.kb} KB`
+                            ? `Nuevo · ${Object.entries(p.resultado.reporte.tipos).map(([t, n]) => `${n} ${t.toLowerCase()}`).join(', ')} · ${p.resultado.reporte.kb} KB${p.resultado.reporte.aviso ? ` · ${p.resultado.reporte.aviso}` : ''}`
                             : p.texto}
                         </span>
                       </td>

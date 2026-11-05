@@ -47,7 +47,7 @@ export interface Resultado {
   glb: Uint8Array;
   modelo: Record<string, unknown>;
   features: GeoJSON.Feature[];
-  reporte: { elementos: number; excluidos: number; estructuras: number; triangulos: number; kb: number; tipos: Record<string, number> };
+  reporte: { elementos: number; excluidos: number; estructuras: number; triangulos: number; kb: number; tipos: Record<string, number>; aviso?: string };
 }
 
 type Avisar = (texto: string, fraccion?: number) => void;
@@ -205,6 +205,47 @@ function envolvente(xy: number[][]): number[][] {
 }
 
 /* ------------------------------------------------------------------ */
+/* Ubicación y unidades                                                */
+/* ------------------------------------------------------------------ */
+
+/** Todo modelo del proyecto debe caer a menos de esto (m) del origen fijo. */
+const RADIO_PROYECTO = 50000;
+
+/** Factores de escala de errores de unidades típicos al exportar IFC (pies↔metros, mm↔m). */
+const FACTORES: { k: number; texto: string }[] = [
+  { k: 1 / 0.3048, texto: 'el IFC declara pies pero sus coordenadas están en metros' },
+  { k: 0.3048, texto: 'el IFC declara metros pero sus coordenadas están en pies' },
+  { k: 0.001, texto: 'el IFC declara metros pero sus coordenadas están en milímetros' },
+  { k: 1000, texto: 'el IFC declara milímetros pero sus coordenadas están en metros' },
+];
+
+/**
+ * Revisa que el modelo caiga en la zona del proyecto. Si cae lejos pero un error de unidades conocido lo
+ * devuelve a la zona, corrige todas las coordenadas (E, N y cota) y devuelve un aviso. Si no hay forma de
+ * ubicarlo, lanza un error: publicarlo así alejaría el plano de todo el proyecto.
+ */
+function corregirUnidades(porTipo: Map<string, Item[]>, proyecto: Proyecto): string | null {
+  let se = 0, sn = 0, n = 0;
+  for (const items of porTipo.values()) for (const it of items) { se += it.centro[0]; sn += it.centro[1]; n++; }
+  if (!n) return null;
+  const e = se / n, nn = sn / n, o = proyecto.origen;
+  const lejos = (k: number) => Math.hypot(e * k - o.e, nn * k - o.n);
+  if (lejos(1) <= RADIO_PROYECTO) return null;
+  const f = FACTORES.find((x) => lejos(x.k) <= RADIO_PROYECTO);
+  if (!f) {
+    throw new Error(`el modelo cae a ${Math.round(lejos(1) / 1000)} km del proyecto (E ${Math.round(e)}, N ${Math.round(nn)}). `
+      + `Revisa que el IFC esté exportado con coordenadas compartidas UTM 17S (EPSG:${proyecto.epsg}).`);
+  }
+  for (const items of porTipo.values()) {
+    for (const it of items) {
+      for (let k = 0; k < it.v.length; k++) it.v[k] *= f.k;
+      for (let c = 0; c < 3; c++) { it.min[c] *= f.k; it.max[c] *= f.k; it.centro[c] *= f.k; }
+    }
+  }
+  return `Unidades corregidas: ${f.texto} (escala ×${f.k.toFixed(4)}).`;
+}
+
+/* ------------------------------------------------------------------ */
 /* Conversión                                                          */
 /* ------------------------------------------------------------------ */
 
@@ -317,6 +358,9 @@ export async function convertirIfc(
             && !/codo|accesorio|fitting/i.test(`${tipoDe.get(mesh.expressID) ?? ''}`)) });
     });
 
+    const aviso = corregirUnidades(porTipo, proyecto);
+    if (aviso) avisar(aviso, 0.71);
+
     avisar('Agrupando estructuras…', 0.72);
     const aLonLat = proj4(`+proj=utm +zone=${proyecto.epsg % 100} ${Math.floor(proyecto.epsg / 100) === 327 ? '+south ' : ''}+datum=WGS84 +units=m +no_defs`, 'EPSG:4326');
     const o = proyecto.origen;
@@ -427,7 +471,7 @@ export async function convertirIfc(
     avisar('Listo', 1);
     return {
       codigo, descripcion, edificio, glb, modelo, features,
-      reporte: { elementos, excluidos, estructuras, triangulos, kb: Math.round(glb.byteLength / 1024), tipos: cuenta },
+      reporte: { elementos, excluidos, estructuras, triangulos, kb: Math.round(glb.byteLength / 1024), tipos: cuenta, ...(aviso ? { aviso } : {}) },
     };
   } finally {
     api.CloseModel(id);

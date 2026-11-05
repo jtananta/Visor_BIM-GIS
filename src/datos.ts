@@ -193,7 +193,28 @@ export function crearProyeccion(epsg: number) {
   };
 }
 
+/** Distancia máxima (m) al centro del conjunto para entrar en un encuadre: el proyecto entero cabe en unos pocos km. */
+const RADIO_ZONA = 50000;
+
+const mediana = (xs: number[]) => {
+  const o = [...xs].sort((a, b) => a - b);
+  const m = o.length >> 1;
+  return o.length % 2 ? o[m] : (o[m - 1] + o[m]) / 2;
+};
+
+/**
+ * Une cajas UTM para encuadrar. Una caja con coordenadas imposibles (un IFC exportado en otras unidades o
+ * sin georreferenciar cae a cientos de km) no debe alejar todo el mapa: se ignora la que queda a más de
+ * RADIO_ZONA de la mediana del conjunto.
+ */
 export function unirCajas(cajas: Caja[]): Caja | null {
+  cajas = cajas.filter((c) => Array.isArray(c) && c.length === 4 && c.every(Number.isFinite));
+  if (cajas.length > 1) {
+    const ce = mediana(cajas.map((c) => (c[0] + c[2]) / 2));
+    const cn = mediana(cajas.map((c) => (c[1] + c[3]) / 2));
+    const cerca = cajas.filter((c) => Math.hypot((c[0] + c[2]) / 2 - ce, (c[1] + c[3]) / 2 - cn) <= RADIO_ZONA);
+    if (cerca.length) cajas = cerca;
+  }
   if (!cajas.length) return null;
   return cajas.reduce<Caja>(
     (a, b) => [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])],
