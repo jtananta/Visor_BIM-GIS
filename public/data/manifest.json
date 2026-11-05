@@ -1324,6 +1324,44 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000334",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000334",
+      "sector": "Sector 3",
+      "paquete": "Paquete 31",
+      "componente": "Componente 308",
+      "componente_desc": "Sistema de drenaje urbano Paralelo Petroperú y Alcantarilla de cruce",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000334.glb",
+      "estructuras": 1028,
+      "tipos": {
+        "Box": 49,
+        "Buzón": 180,
+        "Otros": 641,
+        "Tubería": 158
+      },
+      "metrados": {
+        "Box": {
+          "n": 49,
+          "ml": 4191.83
+        },
+        "Buzón": {
+          "n": 180
+        },
+        "Otros": {
+          "n": 641
+        },
+        "Tubería": {
+          "n": 158,
+          "ml": 4560.81
+        }
+      },
+      "bbox_utm": [
+        469161.9702993221,
+        9493299.678070404,
+        470241.1260376859,
+        9494437.82818189
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000340",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000340",
       "sector": "Sector 3",
