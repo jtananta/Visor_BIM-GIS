@@ -468,6 +468,8 @@ export default function Vista3D(s: EstadoVisor) {
     if (!m) return;
     m.modelos.forEach((obj, cod) => { obj.visible = !s.ocultos.has(cod); });
     for (const p of m.piezas) {
+      // Si un IFC se movió a otro componente, su ubicación nueva está en el manifest.
+      Object.assign(p.meta, ubicacionModelo(s.datos.manifest, p.meta.modelo_codigo));
       const fuera = fueraDeFoco(s.foco, p.meta);
       const color = fuera ? ATENUADO : colorDe(s.modoColor, s.datos, s.sectores, p.meta, s.paquetes);
       const res = p.meta.codigo === s.seleccion?.codigo || p.meta.codigo === hover.current;
