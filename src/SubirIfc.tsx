@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { compararNatural, type Datos, type Modelo } from './datos';
+import { useEffect, useRef, useState } from 'react';
+import { type Datos, type Modelo } from './datos';
 import type { Resultado } from './admin/convertir';
+import ElegirComponente from './ElegirComponente';
 import { guardarConexion, leerConexion, probarConexion, type Conexion } from './admin/github';
 import { componentePorUbicacion, convertirEnWorker, leerContexto, publicarModelos, ubicarResultado, type Contexto } from './admin/modelos';
 
@@ -47,9 +48,6 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
     window.addEventListener('keydown', cerrarConEsc);
     return () => window.removeEventListener('keydown', cerrarConEsc);
   }, [cerrar, ocupado]);
-
-  const componentes = useMemo(() => [...datos.componentes].sort((a, b) =>
-    compararNatural(a.sector, b.sector) || compararNatural(a.paquete, b.paquete) || compararNatural(a.componente, b.componente)), [datos.componentes]);
 
   // Cada cambio de componente vuelve a mostrar los modelos con su nueva ubicación (y un GLB con URL nueva,
   // para que la vista 3D recargue la ficha de cada pieza).
@@ -142,16 +140,7 @@ export default function SubirIfc({ datos, verAqui, cerrar }: Props) {
                 {i.resultado && (
                   <label className="campo">
                     <span>Componente</span>
-                    <select value={i.componente} onChange={(e) => cambiarComponente(i.archivo, e.target.value)} disabled={Boolean(ocupado)}>
-                      {!componentes.some((c) => c.componente === i.componente) && <option value={i.componente}>{i.componente || 'Elegir componente…'}</option>}
-                      {[...new Set(componentes.map((c) => `${c.sector} · ${c.paquete}`))].map((g) => (
-                        <optgroup key={g} label={g}>
-                          {componentes.filter((c) => `${c.sector} · ${c.paquete}` === g).map((c) => (
-                            <option key={c.componente} value={c.componente}>{c.componente} · {c.descripcion}</option>
-                          ))}
-                        </optgroup>
-                      ))}
-                    </select>
+                    <ElegirComponente componentes={datos.componentes} valor={i.componente} cambiar={(c) => cambiarComponente(i.archivo, c)} desactivado={Boolean(ocupado)} />
                   </label>
                 )}
               </li>

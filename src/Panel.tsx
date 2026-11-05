@@ -17,6 +17,8 @@ interface Props {
   enfocarModelo: (m: Modelo) => void;
   /** Abre la confirmación para eliminar un IFC publicado. */
   pedirEliminar: (m: Modelo) => void;
+  /** Abre el cuadro para mover un IFC publicado a otro componente, paquete o sector. */
+  pedirMover: (m: Modelo) => void;
 }
 
 interface Fila {
@@ -29,6 +31,14 @@ function Ojo({ visible }: { visible: boolean }) {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" opacity={visible ? 1 : 0.35} />
       {visible ? <circle cx="12" cy="12" r="3" /> : <line x1="3" y1="21" x2="21" y2="3" />}
+    </svg>
+  );
+}
+
+function Flechas() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+      <path d="M4 8h14M14 4l4 4-4 4M20 16H6M10 12l-4 4 4 4" />
     </svg>
   );
 }
@@ -217,14 +227,16 @@ export default function Panel(p: Props) {
                                       <span className="ifc-nombre">{m.modelo}</span>
                                       <span className="sutil">{m.estructuras} estructuras</span>
                                     </button>
+                                    <button className="btn-ojo btn-mover" onClick={() => p.pedirMover(m)} aria-label={`Mover ${m.modelo}`} title="Mover este IFC a otro componente, paquete o sector"><Flechas /></button>
                                     <button className="btn-ojo btn-borrar" onClick={() => p.pedirEliminar(m)} aria-label={`Eliminar ${m.modelo}`} title="Eliminar este IFC"><Papelera /></button>
                                   </li>
                                 ))}
                               </ul>
                             )}
-                            {mods.length === 1 && (
+                            {mods.length === 1 && (<>
+                              <button className="btn-ojo btn-mover" onClick={() => p.pedirMover(mods[0])} aria-label={`Mover ${mods[0].modelo}`} title="Mover este IFC a otro componente, paquete o sector"><Flechas /></button>
                               <button className="btn-ojo btn-borrar" onClick={() => p.pedirEliminar(mods[0])} aria-label={`Eliminar ${mods[0].modelo}`} title="Eliminar este IFC"><Papelera /></button>
-                            )}
+                            </>)}
                           </li>
                         );
                       })}

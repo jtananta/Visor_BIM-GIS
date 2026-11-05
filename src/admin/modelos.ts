@@ -208,3 +208,48 @@ export function componentePorUbicacion(caja: number[], modelos: Modelo[], margen
   for (const [c, v] of puntos) if (v > max) { mejor = c; max = v; }
   return mejor;
 }
+
+/**
+ * Mueve modelos ya publicados a otro componente (y con él, a su paquete y sector) sin volver a subir el IFC:
+ * cambia su ubicación en el manifest, en el catálogo y en su trazado, todo en un solo commit. El GLB no se
+ * toca porque el visor toma la ubicación del manifest. Lee antes el estado actual del repositorio para no
+ * pisar cambios de otros.
+ */
+export async function moverModelos(con: Conexion, codigos: string[], componente: string, componentes: Componente[], avisar: (t: string) => void): Promise<void> {
+  const destino = componentes.find((c) => c.componente === componente);
+  if (!destino) throw new Error('Elige el componente al que quieres mover el IFC.');
+  const ub = ubicacionDe(destino);
+  avisar('Leyendo el estado actual del visor…');
+  const [m, cat] = await Promise.all([
+    leerTexto(con, `${RAIZ_DATOS}manifest.json`),
+    leerTexto(con, `${RAIZ_DATOS}catalogo.csv`),
+  ]);
+  if (!m) throw new Error(`No encontré ${RAIZ_DATOS}manifest.json en el repositorio.`);
+  const mover = new Set(codigos);
+  const manifest: Manifest = JSON.parse(m);
+  const movidos = manifest.modelos.filter((x) => mover.has(x.codigo));
+  if (!movidos.length) throw new Error('Ese modelo ya no está publicado. Recarga la página.');
+  const cambios: Cambios = {};
+  const divididos = await dividirTrazadoAntiguo(con, manifest.modelos.map((x) => x.codigo), cambios);
+  const trazados: Record<string, GeoJSON.Feature[]> = { ...(divididos ?? {}) };
+  for (const x of movidos) {
+    let features = trazados[x.codigo];
+    if (!features) {
+      const t = await leerTexto(con, `${RAIZ_DATOS}${rutaTrazado(x.codigo)}`);
+      features = t ? JSON.parse(t).features ?? [] : [];
+    }
+    trazados[x.codigo] = features.map((f) => ({ ...f, properties: { ...f.properties, ...ub } }));
+  }
+  const catalogo = cat ? parseCsv(cat) : [];
+  for (const x of movidos) {
+    const i = catalogo.findIndex((f) => f.codigo === x.codigo);
+    if (i >= 0) catalogo[i] = { ...catalogo[i], componente };
+    else catalogo.push({ codigo: x.codigo, modelo: x.modelo, componente, descripcion_ifc: '', revisado: 'sí' });
+  }
+  archivosModelos(manifest, {
+    modelos: manifest.modelos.map((x) => (mover.has(x.codigo) ? { ...x, ...ub } : x)),
+    trazados,
+    catalogo,
+  }, cambios);
+  await publicar(con, cambios, `Visor: mueve ${movidos.map((x) => x.codigo).join(', ')} a ${componente} (${destino.paquete}, ${destino.sector})`, avisar);
+}

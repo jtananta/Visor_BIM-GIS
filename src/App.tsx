@@ -7,6 +7,7 @@ import Leyenda from './Leyenda';
 import PlanoGeneral from './PlanoGeneral';
 import Tablero from './Tablero';
 const EliminarModelo = lazy(() => import('./EliminarModelo'));
+const MoverModelo = lazy(() => import('./MoverModelo'));
 
 // three.js solo se descarga cuando alguien abre la vista 3D.
 const Vista3D = lazy(() => import('./Vista3D'));
@@ -59,6 +60,7 @@ export default function App() {
   const [panelAbierto, setPanelAbierto] = useState(() => window.innerWidth > 760);
   const [subiendo, setSubiendo] = useState(false);
   const [eliminando, setEliminando] = useState<Modelo | null>(null);
+  const [moviendo, setMoviendo] = useState<Modelo | null>(null);
   const ultimoEncuadre = useRef<Caja | null>(null);
 
   useEffect(() => {
@@ -146,6 +148,17 @@ export default function App() {
     setSeleccion((s) => (s && s.modelo_codigo === codigo ? null : s));
   };
 
+  /** Tras publicar el cambio de componente de un IFC, lo refleja también en este navegador. */
+  const moverModelo = (codigo: string, ub: Pick<Modelo, 'sector' | 'paquete' | 'componente' | 'componente_desc'>) => {
+    setDatos((d) => d && {
+      ...d,
+      manifest: { ...d.manifest, modelos: d.manifest.modelos.map((m) => (m.codigo === codigo ? { ...m, ...ub } : m)) },
+      trazado: { ...d.trazado, features: d.trazado.features.map((f) => (String(f.properties?.modelo_codigo) === codigo ? { ...f, properties: { ...f.properties, ...ub } } : f)) },
+    });
+    setSeleccion((s) => (s && s.modelo_codigo === codigo ? { ...s, ...ub } : s));
+    setFoco({ campo: 'componente', valor: ub.componente });
+  };
+
   if (error) return <div className="pantalla-mensaje">{error}</div>;
   if (!datos) return <div className="pantalla-mensaje">Cargando el proyecto…</div>;
 
@@ -202,6 +215,7 @@ export default function App() {
             quitarFoco={() => setFoco(null)}
             enfocarModelo={(m) => { setFoco({ campo: 'componente', valor: m.componente }); setOcultos((prev) => { const n = new Set(prev); n.delete(m.codigo); return n; }); encuadrar(m.bbox_utm); }}
             pedirEliminar={setEliminando}
+            pedirMover={setMoviendo}
           />
           <main className="lienzo">
             {vista === 'plano' ? (
@@ -231,6 +245,11 @@ export default function App() {
       {eliminando && (
         <Suspense fallback={null}>
           <EliminarModelo modelo={eliminando} cerrar={() => setEliminando(null)} alEliminar={quitarModelo} />
+        </Suspense>
+      )}
+      {moviendo && (
+        <Suspense fallback={null}>
+          <MoverModelo modelo={moviendo} componentes={datos.componentes} cerrar={() => setMoviendo(null)} alMover={moverModelo} />
         </Suspense>
       )}
     </div>
