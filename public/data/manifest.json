@@ -1999,6 +1999,39 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-000348",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-000348",
+      "sector": "Sector 3",
+      "paquete": "Paquete 33",
+      "componente": "Componente 316",
+      "componente_desc": "Sistema de drenaje urbano canal colector Petroperú y Alcantarilla Miguel Grau",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-000348.glb",
+      "estructuras": 170,
+      "tipos": {
+        "Box": 14,
+        "Otros": 104,
+        "Sumidero": 52
+      },
+      "metrados": {
+        "Box": {
+          "n": 14,
+          "ml": 635.09
+        },
+        "Otros": {
+          "n": 104
+        },
+        "Sumidero": {
+          "n": 52
+        }
+      },
+      "bbox_utm": [
+        469114.2310286405,
+        9493149.897974983,
+        470152.8936399868,
+        9494109.698040837
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000349",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000349",
       "sector": "Sector 3",
