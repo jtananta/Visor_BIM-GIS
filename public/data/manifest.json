@@ -734,6 +734,30 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-CV-000336",
+      "modelo": "500125-CSSP001-780-XX-MD-CV-000336",
+      "sector": "Sector 3",
+      "paquete": "Paquete 32",
+      "componente": "Componente 313",
+      "componente_desc": "Diques de retención de sedimentos Sudamérica (7; 8; 9; 11 y 12)",
+      "glb": "models/500125-CSSP001-780-XX-MD-CV-000336.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469826.371936166,
+        9493011.310800351,
+        469900.4469331143,
+        9493041.810800351
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-CV-000337",
       "modelo": "500125-CSSP001-780-XX-MD-CV-000337",
       "sector": "Sector 3",
