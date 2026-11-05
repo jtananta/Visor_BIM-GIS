@@ -2002,9 +2002,9 @@
       "codigo": "500125-CSSP001-780-XX-MD-ST-000349",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000349",
       "sector": "Sector 3",
-      "paquete": "Paquete 31",
-      "componente": "Componente 308",
-      "componente_desc": "Sistema de drenaje urbano Paralelo Petroperú y Alcantarilla de cruce",
+      "paquete": "Paquete 33",
+      "componente": "Componente 316",
+      "componente_desc": "Sistema de drenaje urbano canal colector Petroperú y Alcantarilla Miguel Grau",
       "glb": "models/500125-CSSP001-780-XX-MD-ST-000349.glb",
       "estructuras": 169,
       "tipos": {
