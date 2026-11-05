@@ -1587,39 +1587,6 @@
       ]
     },
     {
-      "codigo": "500125-CSSP001-780-XX-MD-ST-000336",
-      "modelo": "500125-CSSP001-780-XX-MD-ST-000336",
-      "sector": "Sector 3",
-      "paquete": "Paquete 32",
-      "componente": "Componente 314",
-      "componente_desc": "Depósito de Retención Sudamérica - DDR1",
-      "glb": "models/500125-CSSP001-780-XX-MD-ST-000336.glb",
-      "estructuras": 71,
-      "tipos": {
-        "Otros": 24,
-        "Sumidero": 24,
-        "Tubería": 23
-      },
-      "metrados": {
-        "Otros": {
-          "n": 24
-        },
-        "Sumidero": {
-          "n": 24
-        },
-        "Tubería": {
-          "n": 23,
-          "ml": 935.48
-        }
-      },
-      "bbox_utm": [
-        469976.5955264104,
-        9492866.685018687,
-        471416.20891332027,
-        9493119.827188969
-      ]
-    },
-    {
       "codigo": "500125-CSSP001-780-XX-MD-ST-000340",
       "modelo": "500125-CSSP001-780-XX-MD-ST-000340",
       "sector": "Sector 3",
