@@ -494,6 +494,30 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-CV-000316",
+      "modelo": "500125-CSSP001-780-XX-MD-CV-000316",
+      "sector": "Sector 3",
+      "paquete": "Paquete 32",
+      "componente": "Componente 309",
+      "componente_desc": "Depósito de Retención Vencedores - DDR5",
+      "glb": "models/500125-CSSP001-780-XX-MD-CV-000316.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469895.6790968296,
+        9493024.645876458,
+        470179.3973862126,
+        9493031.30873542
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-CV-000322",
       "modelo": "500125-CSSP001-780-XX-MD-CV-000322",
       "sector": "Sector 3",
