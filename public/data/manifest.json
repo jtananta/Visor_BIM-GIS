@@ -542,6 +542,30 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-CV-000318",
+      "modelo": "500125-CSSP001-780-XX-MD-CV-000318",
+      "sector": "Sector 3",
+      "paquete": "Paquete 32",
+      "componente": "Componente 311",
+      "componente_desc": "Sistema de drenaje urbano Urbanización Sudamérica",
+      "glb": "models/500125-CSSP001-780-XX-MD-CV-000318.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        470362.6901368359,
+        9492624.585346548,
+        470890.3491694869,
+        9492873.040668814
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-CV-000322",
       "modelo": "500125-CSSP001-780-XX-MD-CV-000322",
       "sector": "Sector 3",
