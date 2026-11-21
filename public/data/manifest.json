@@ -176,8 +176,8 @@
       "modelo": "500125-CSSP001-560-XX-MD-HD-003120",
       "sector": "Sector 1",
       "paquete": "Paquete 3",
-      "componente": "Componente 22",
-      "componente_desc": "DIQUE 01 - YALE",
+      "componente": "Componente 20",
+      "componente_desc": "DIQUE 01 - POLITÉCNICO",
       "glb": "models/500125-CSSP001-560-XX-MD-HD-003120.glb",
       "estructuras": 8,
       "tipos": {
