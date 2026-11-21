@@ -29,7 +29,7 @@ import ifcopenshell.geom
 import ifcopenshell.util.element as ue
 import numpy as np
 from pyproj import Transformer
-from shapely.geometry import MultiPoint, mapping
+from shapely.geometry import MultiPoint, Polygon, mapping
 from shapely.ops import transform as shp_transform, unary_union
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)  # shapely.ops.transform
@@ -299,6 +299,29 @@ def ubicar(cat, componentes):
 # Proceso principal
 # ---------------------------------------------------------------------------
 
+def silueta(v, f):
+    """Huella en planta de un elemento (misma idea que src/admin/silueta.ts).
+
+    La envolvente convexa sirve para un buzón o una losa, pero un elemento largo y quebrado (un canal
+    modelado como un solo barrido de cientos de metros) se volvía un triángulo enorme. Si la envolvente
+    se aleja más de un 25 % de la unión de los triángulos proyectados, se usa esa unión.
+    """
+    xy = v[:, :2]
+    muestra = xy if len(xy) <= 600 else xy[np.random.default_rng(0).choice(len(xy), 600, replace=False)]
+    convexa = MultiPoint(muestra).convex_hull
+    if len(f) == 0:
+        return convexa
+    t = xy[np.asarray(f).reshape(-1, 3)]
+    area = np.abs((t[:, 1, 0] - t[:, 0, 0]) * (t[:, 2, 1] - t[:, 0, 1]) - (t[:, 2, 0] - t[:, 0, 0]) * (t[:, 1, 1] - t[:, 0, 1])) / 2
+    t = t[area >= 1e-4]  # caras verticales
+    if not len(t):
+        return convexa
+    real = unary_union([Polygon(p) for p in t])
+    if real.is_empty or convexa.area <= 1.25 * real.area:
+        return convexa
+    return real
+
+
 def largo_principal(v):
     """Largo de la nube de puntos a lo largo de su eje principal (sirve para tubos inclinados o en diagonal)."""
     if len(v) < 2:
@@ -402,10 +425,7 @@ def convertir(ruta, salida, catalogo, componentes, a_wgs84):
             # así un tramo de tubería en L no se dibuja como un triángulo.
             partes = []
             for it in g:
-                xy = it["v"][:, :2]
-                if len(xy) > 600:
-                    xy = xy[np.random.default_rng(0).choice(len(xy), 600, replace=False)]
-                partes.append(MultiPoint(xy).convex_hull.buffer(0.15))
+                partes.append(silueta(it["v"], it["f"]).buffer(0.15))
             huella = unary_union(partes).simplify(0.1)
             huella = shp_transform(lambda x, y, z=None: tuple(np.round(a_wgs84.transform(x, y), 7)), huella)
             features.append({"type": "Feature", "properties": meta, "geometry": mapping(huella)})

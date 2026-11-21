@@ -12,6 +12,7 @@ import { dedup, meshopt, simplify, weld } from '@gltf-transform/functions';
 import { MeshoptEncoder, MeshoptSimplifier } from 'meshoptimizer';
 import proj4 from 'proj4';
 import poligonos, { type Geom, type MultiPolygon, type Pair } from 'polygon-clipping';
+import { siluetaElemento } from './silueta';
 
 export interface Regla {
   tipo: string;
@@ -190,18 +191,6 @@ function agrupar(regla: Regla | undefined, items: Item[]): Item[][] {
     return [...celdas.values()];
   }
   return agruparContacto(items, r.tolerancia ?? 0.5);
-}
-
-/** Envolvente convexa 2D (cadena monótona). */
-function envolvente(xy: number[][]): number[][] {
-  const pts = xy.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  if (pts.length < 3) return pts;
-  const cruz = (o: number[], a: number[], b: number[]) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
-  const lo: number[][] = [];
-  for (const p of pts) { while (lo.length >= 2 && cruz(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
-  const hi: number[][] = [];
-  for (let i = pts.length - 1; i >= 0; i--) { const p = pts[i]; while (hi.length >= 2 && cruz(hi[hi.length - 2], hi[hi.length - 1], p) <= 0) hi.pop(); hi.push(p); }
-  return lo.slice(0, -1).concat(hi.slice(0, -1));
 }
 
 /* ------------------------------------------------------------------ */
@@ -402,13 +391,8 @@ export async function convertirIfc(
             bmax[0] = Math.max(bmax[0], e); bmax[1] = Math.max(bmax[1], nn);
           }
           for (let k = 0; k < it.f.length; k++) ind[pi++] = it.f[k] + base;
-          // Silueta del elemento, con a lo sumo 600 puntos.
-          const paso = Math.max(1, Math.floor(it.v.length / 3 / 600));
-          const xy: number[][] = [];
-          for (let k = 0; k < it.v.length; k += 3 * paso) xy.push([it.v[k], it.v[k + 1]]);
-          // Relativa al origen y al centímetro: polygon-clipping pierde precisión con coordenadas UTM completas.
-          const h = envolvente(xy).map(([x, y]) => [Math.round((x - o.e) * 100) / 100, Math.round((y - o.n) * 100) / 100] as Pair);
-          if (h.length >= 3) partes.push([[...h, h[0]]]);
+          // Silueta real del elemento en planta (envolvente convexa si es compacto; si no, calco en planta de su malla).
+          partes.push(...siluetaElemento(it.v, it.f, o.e, o.n));
         }
         const tramo = regla?.agrupar === 'tramo';
         const ml = metrosLineales(regla, g);
@@ -434,7 +418,7 @@ export async function convertirIfc(
         const nodo = doc.createNode(meta.codigo).setMesh(doc.createMesh(meta.nombre).addPrimitive(prim)).setExtras(meta);
         escena.addChild(nodo);
         if (partes.length) {
-          // Unión de las siluetas, igual que shapely en convert.py: una tubería en L no se dibuja como triángulo
+          // Unión de las siluetas de los elementos del grupo: un canal en L no se dibuja como triángulo
           // y el trazado no pesa más de lo necesario.
           let unidas: MultiPolygon;
           try {
