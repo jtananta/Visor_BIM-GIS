@@ -331,6 +331,30 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-BM-010103",
+      "modelo": "500125-CSSP001-780-XX-MD-BM-010103",
+      "sector": "Sector 1",
+      "paquete": "Paquete 8",
+      "componente": "Componente 11.2",
+      "componente_desc": "DRENAJE URBANO JESUS MARIA",
+      "glb": "models/500125-CSSP001-780-XX-MD-BM-010103.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469320.3192308593,
+        9496225.926272439,
+        469419.46171444515,
+        9496280.477943065
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-CV-000206",
       "modelo": "500125-CSSP001-780-XX-MD-CV-000206",
       "sector": "Sector 2",
