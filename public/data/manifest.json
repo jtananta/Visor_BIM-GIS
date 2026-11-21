@@ -172,6 +172,122 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-560-XX-MD-HD-003120",
+      "modelo": "500125-CSSP001-560-XX-MD-HD-003120",
+      "sector": "Sector 1",
+      "paquete": "Paquete 3",
+      "componente": "Componente 22",
+      "componente_desc": "DIQUE 01 - YALE",
+      "glb": "models/500125-CSSP001-560-XX-MD-HD-003120.glb",
+      "estructuras": 8,
+      "tipos": {
+        "Gaviones": 4,
+        "Otros": 4
+      },
+      "metrados": {
+        "Gaviones": {
+          "n": 4,
+          "ml": 123.41
+        },
+        "Otros": {
+          "n": 4
+        }
+      },
+      "bbox_utm": [
+        469943.8944452291,
+        9495639.216774618,
+        470025.63198040554,
+        9495717.935450187
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-560-XX-MD-HD-003122",
+      "modelo": "500125-CSSP001-560-XX-MD-HD-003122",
+      "sector": "Sector 1",
+      "paquete": "Paquete 3",
+      "componente": "Componente 23",
+      "componente_desc": "DIQUE 02 - YALE",
+      "glb": "models/500125-CSSP001-560-XX-MD-HD-003122.glb",
+      "estructuras": 5,
+      "tipos": {
+        "Gaviones": 3,
+        "Otros": 2
+      },
+      "metrados": {
+        "Gaviones": {
+          "n": 3,
+          "ml": 131.19
+        },
+        "Otros": {
+          "n": 2
+        }
+      },
+      "bbox_utm": [
+        470930.258581861,
+        9494448.441931898,
+        471005.5690799494,
+        9494544.150807258
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-560-XX-MD-HD-003123",
+      "modelo": "500125-CSSP001-560-XX-MD-HD-003123",
+      "sector": "Sector 1",
+      "paquete": "Paquete 3",
+      "componente": "Componente 20",
+      "componente_desc": "DIQUE 01 - POLITÉCNICO",
+      "glb": "models/500125-CSSP001-560-XX-MD-HD-003123.glb",
+      "estructuras": 4,
+      "tipos": {
+        "Gaviones": 2,
+        "Otros": 2
+      },
+      "metrados": {
+        "Gaviones": {
+          "n": 2,
+          "ml": 77.78
+        },
+        "Otros": {
+          "n": 2
+        }
+      },
+      "bbox_utm": [
+        471261.683717172,
+        9495619.846579015,
+        471333.3033834369,
+        9495674.997479793
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-560-XX-MD-HD-003125",
+      "modelo": "500125-CSSP001-560-XX-MD-HD-003125",
+      "sector": "Sector 1",
+      "paquete": "Paquete 3",
+      "componente": "Componente 25",
+      "componente_desc": "DIQUE 04 - YALE",
+      "glb": "models/500125-CSSP001-560-XX-MD-HD-003125.glb",
+      "estructuras": 4,
+      "tipos": {
+        "Gaviones": 1,
+        "Otros": 3
+      },
+      "metrados": {
+        "Gaviones": {
+          "n": 1,
+          "ml": 76.84
+        },
+        "Otros": {
+          "n": 3
+        }
+      },
+      "bbox_utm": [
+        471599.31451079214,
+        9496003.216332639,
+        471680.35819590394,
+        9496059.257513484
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-560-XX-MD-HD-013100",
       "modelo": "500125-CSSP001-560-XX-MD-HD-013100",
       "sector": "Sector 1",
