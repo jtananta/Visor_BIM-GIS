@@ -221,6 +221,54 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-501-XX-MD-ST-006101",
+      "modelo": "500125-CSSP001-501-XX-MD-ST-006101",
+      "sector": "Sector 1",
+      "paquete": "Paquete 6",
+      "componente": "Componente 2",
+      "componente_desc": "DEFENSA RIBEREÑA - POLITÉCNICO",
+      "glb": "models/500125-CSSP001-501-XX-MD-ST-006101.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469669.73614278436,
+        9495387.740195738,
+        469861.4409476033,
+        9495562.094991766
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-501-XX-MD-ST-006102",
+      "modelo": "500125-CSSP001-501-XX-MD-ST-006102",
+      "sector": "Sector 1",
+      "paquete": "Paquete 6",
+      "componente": "Componente 2",
+      "componente_desc": "DEFENSA RIBEREÑA - POLITÉCNICO",
+      "glb": "models/500125-CSSP001-501-XX-MD-ST-006102.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469653.699974457,
+        9495367.517733539,
+        469671.9409581672,
+        9495413.543080138
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-560-XX-MD-HD-003120",
       "modelo": "500125-CSSP001-560-XX-MD-HD-003120",
       "sector": "Sector 1",
@@ -1381,6 +1429,30 @@
         9492497.7372101,
         470075.17631996656,
         9492593.28547365
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-CV-006101",
+      "modelo": "500125-CSSP001-780-XX-MD-CV-006101",
+      "sector": "Sector 1",
+      "paquete": "Paquete 6",
+      "componente": "Componente 2",
+      "componente_desc": "DEFENSA RIBEREÑA - POLITÉCNICO",
+      "glb": "models/500125-CSSP001-780-XX-MD-CV-006101.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469443.16615144827,
+        9495341.250894336,
+        469456.7490734301,
+        9495356.002176074
       ]
     },
     {
