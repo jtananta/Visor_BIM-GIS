@@ -3254,6 +3254,35 @@
         469834.4251289746,
         9493024.03652701
       ]
+    },
+    {
+      "codigo": "500125-CSSP001-780-XX-MD-ST-006105",
+      "modelo": "500125-CSSP001-780-XX-MD-ST-006105",
+      "sector": "Sector 1",
+      "paquete": "Paquete 6",
+      "componente": "Componente 2",
+      "componente_desc": "DEFENSA RIBEREÑA - POLITÉCNICO",
+      "glb": "models/500125-CSSP001-780-XX-MD-ST-006105.glb",
+      "estructuras": 2,
+      "tipos": {
+        "Box": 1,
+        "Otros": 1
+      },
+      "metrados": {
+        "Box": {
+          "n": 1,
+          "ml": 24.37
+        },
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469450.9387255809,
+        9495340.546385689,
+        469487.6565033617,
+        9495369.581933541
+      ]
     }
   ]
 }
