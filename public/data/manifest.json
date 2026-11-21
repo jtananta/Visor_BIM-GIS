@@ -355,6 +355,30 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-780-XX-MD-BM-010101",
+      "modelo": "500125-CSSP001-780-XX-MD-BM-010101",
+      "sector": "Sector 1",
+      "paquete": "Paquete 1",
+      "componente": "Componente 9",
+      "componente_desc": "ALCANTARILLA 1 - SANTA RITA",
+      "glb": "models/500125-CSSP001-780-XX-MD-BM-010101.glb",
+      "estructuras": 1,
+      "tipos": {
+        "Otros": 1
+      },
+      "metrados": {
+        "Otros": {
+          "n": 1
+        }
+      },
+      "bbox_utm": [
+        469389.39930319233,
+        9496275.187872818,
+        469448.2273278022,
+        9496335.345330967
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-780-XX-MD-BM-010103",
       "modelo": "500125-CSSP001-780-XX-MD-BM-010103",
       "sector": "Sector 1",
