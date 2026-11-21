@@ -119,6 +119,35 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-501-XX-MD-BM-001103",
+      "modelo": "500125-CSSP001-501-XX-MD-BM-001103",
+      "sector": "Sector 1",
+      "paquete": "Paquete 1",
+      "componente": "Componente 1",
+      "componente_desc": "DEFENSA RIBEREÑA - SANTA RITA",
+      "glb": "models/500125-CSSP001-501-XX-MD-BM-001103.glb",
+      "estructuras": 9,
+      "tipos": {
+        "Gaviones": 7,
+        "Otros": 2
+      },
+      "metrados": {
+        "Gaviones": {
+          "n": 7,
+          "ml": 475.04
+        },
+        "Otros": {
+          "n": 2
+        }
+      },
+      "bbox_utm": [
+        469425.28734064,
+        9496309.089975253,
+        469775.9249013451,
+        9496635.254031116
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-560-XX-MD-ST-000092",
       "modelo": "Dique Mangle",
       "paquete": "Paquete 9",
