@@ -119,6 +119,30 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-501-XX-MD-BM-001102",
+      "modelo": "500125-CSSP001-501-XX-MD-BM-001102",
+      "sector": "Sector 1",
+      "paquete": "Paquete 1",
+      "componente": "Componente 1",
+      "componente_desc": "DEFENSA RIBEREÑA - SANTA RITA",
+      "glb": "models/500125-CSSP001-501-XX-MD-BM-001102.glb",
+      "estructuras": 4,
+      "tipos": {
+        "Otros": 4
+      },
+      "metrados": {
+        "Otros": {
+          "n": 4
+        }
+      },
+      "bbox_utm": [
+        469467.9669409098,
+        9496370.326615598,
+        469613.564963898,
+        9496505.716720497
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-501-XX-MD-BM-001103",
       "modelo": "500125-CSSP001-501-XX-MD-BM-001103",
       "sector": "Sector 1",
