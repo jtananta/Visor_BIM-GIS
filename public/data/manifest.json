@@ -172,6 +172,55 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-501-XX-MD-ST-003101",
+      "modelo": "500125-CSSP001-501-XX-MD-ST-003101",
+      "sector": "Sector 1",
+      "paquete": "Paquete 4",
+      "componente": "Componente 3",
+      "componente_desc": "DEFENSA RIBEREÑA - YALE",
+      "glb": "models/500125-CSSP001-501-XX-MD-ST-003101.glb",
+      "estructuras": 3,
+      "tipos": {
+        "Otros": 3
+      },
+      "metrados": {
+        "Otros": {
+          "n": 3
+        }
+      },
+      "bbox_utm": [
+        470124.5095314206,
+        9494315.72928118,
+        470655.734013284,
+        9494596.186143069
+      ]
+    },
+    {
+      "codigo": "500125-CSSP001-501-XX-MD-ST-003102",
+      "modelo": "500125-CSSP001-501-XX-MD-ST-003102",
+      "sector": "Sector 1",
+      "paquete": "Paquete 4",
+      "componente": "Componente 3",
+      "componente_desc": "DEFENSA RIBEREÑA - YALE",
+      "glb": "models/500125-CSSP001-501-XX-MD-ST-003102.glb",
+      "estructuras": 20,
+      "tipos": {
+        "Gaviones": 20
+      },
+      "metrados": {
+        "Gaviones": {
+          "n": 20,
+          "ml": 1713.05
+        }
+      },
+      "bbox_utm": [
+        469761.67338217096,
+        9494254.853687126,
+        470964.3948406236,
+        9494686.364878707
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-560-XX-MD-HD-003120",
       "modelo": "500125-CSSP001-560-XX-MD-HD-003120",
       "sector": "Sector 1",
