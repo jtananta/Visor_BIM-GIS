@@ -220,6 +220,30 @@
       ]
     },
     {
+      "codigo": "500125-CSSP001-560-XX-MD-HD-015100",
+      "modelo": "500125-CSSP001-560-XX-MD-HD-015100",
+      "sector": "Sector 1",
+      "paquete": "Paquete 2",
+      "componente": "Componente 15",
+      "componente_desc": "DIQUE 04 - SANTA RITA",
+      "glb": "models/500125-CSSP001-560-XX-MD-HD-015100.glb",
+      "estructuras": 2,
+      "tipos": {
+        "Otros": 2
+      },
+      "metrados": {
+        "Otros": {
+          "n": 2
+        }
+      },
+      "bbox_utm": [
+        470208.53391372866,
+        9496714.30614466,
+        470271.2631856009,
+        9496791.051448114
+      ]
+    },
+    {
       "codigo": "500125-CSSP001-560-XX-MD-ST-000092",
       "modelo": "Dique Mangle",
       "paquete": "Paquete 9",
