@@ -334,9 +334,9 @@
       "codigo": "500125-CSSP001-780-XX-MD-BM-010103",
       "modelo": "500125-CSSP001-780-XX-MD-BM-010103",
       "sector": "Sector 1",
-      "paquete": "Paquete 8",
-      "componente": "Componente 11.2",
-      "componente_desc": "DRENAJE URBANO JESUS MARIA",
+      "paquete": "Paquete 1",
+      "componente": "Componente 1",
+      "componente_desc": "DEFENSA RIBEREÑA - SANTA RITA",
       "glb": "models/500125-CSSP001-780-XX-MD-BM-010103.glb",
       "estructuras": 1,
       "tipos": {
